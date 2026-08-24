@@ -1,17 +1,287 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>ROBO DIGITAL COMPUTERS</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Robo Digital Computers offers professional computer sales, repair, printer support, CCTV installation, UPS service, and digital solutions in Musiri, Trichy.">
+    <title>Robo Digital Computers</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
-<body>
+<body class="luxury-theme">
+    <header class="topbar">
+        <div class="container nav-wrap">
+            <div class="brand-box">
+                <div class="brand-mark">R</div>
+                <div>
+                    <span class="brand-name">ROBO DIGITAL COMPUTERS</span>
+                    <small>Trusted Solutions for Every Digital Need</small>
+                </div>
+            </div>
+            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span class="sr-only">Toggle navigation</span>
+            </button>
+            <nav id="main-navigation" class="main-nav" aria-label="Main navigation">
+                <a href="#home">Home</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a href="{% url 'login' %}" class="nav-login">Login</a>
+            </nav>
+        </div>
+    </header>
 
-    <h1>ROBO DIGITAL COMPUTERS</h1>
+    <main>
+        <section id="home" class="hero">
+            <div class="container hero-content">
+                <div class="hero-visual">
+                    <div class="logo-panel">
+                        <div class="panel-screen">
+                            <span class="screen-line"></span>
+                            <span class="screen-line short"></span>
+                            <span class="screen-line"></span>
+                        </div>
+                        <div class="logo-title">
+                            <h1>ROBO</h1>
+                            <h2>DIGITAL COMPUTERS</h2>
+                        </div>
+                    </div>
+                </div>
 
-    <p>Computer Sales, Service & Digital Solutions</p>
+                <div class="hero-copy">
+                    <p class="eyebrow">Professional Computer & Digital Solution Center</p>
+                    <h3>Reliable technology support for homes, students, and businesses.</h3>
+                    <ul class="feature-list">
+                        <li>Computer Sales & Service</li>
+                        <li>Laptop Chip Level Service</li>
+                        <li>CCTV Camera Installation</li>
+                        <li>Printer & UPS Sales & Service</li>
+                        <li>Xerox & Color Print & Scan</li>
+                        <li>All Type Online Work</li>
+                        
+                    </ul>
+                    <div class="hero-actions">
+                        <a href="#services" class="btn btn-primary">Our Services</a>
+                        <a href="#contact" class="btn btn-secondary">Contact Us</a>
+                    </div>
+                </div>
+            </div>
 
-    <button><a href="{% url 'login' %}">
-    <button type="button">Login</button>
-</a></button>
+            
+        </section>
 
+        <section id="services" class="section">
+            <div class="container">
+                <div class="section-head">
+                    <p class="eyebrow dark">Our Expertise</p>
+                    <h2>Complete Tech Solutions Under One Roof</h2>
+                </div>
+
+                <div class="services-grid">
+                    <article class="service-card">
+                        <div class="service-icon">01</div>
+                        <h3>Computer Sales</h3>
+                        <p>We supply dependable desktops, laptops, accessories, and computer components suited to your needs and budget.</p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">02</div>
+                        <h3>Computer Service</h3>
+                        <p>From routine maintenance to complex device repairs, we help restore performance and keep systems running smoothly.</p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">03</div>
+                        <h3>Printer & UPS Service</h3>
+                        <p>Professional printer maintenance, UPS support, and repair services to minimize downtime in home or office setups.</p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">04</div>
+                        <h3>CCTV Installation</h3>
+                        <p>Secure your premises with reliable surveillance systems, installation support, and practical guidance for safer spaces.</p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">05</div>
+                        <h3>Chip Level Repair</h3>
+                        <p>Expert laptop repair and chip-level diagnostics for advanced technical issues that require careful handling.</p>
+                    </article>
+
+                    <article class="service-card">
+                        <div class="service-icon">06</div>
+                        <h3>Digital Support</h3>
+                        <p>We provide typing, online work assistance, print/scan support, and other digital help for everyday productivity.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="section about-section">
+            <div class="container about-box">
+                <div class="section-head left-align">
+                    <p class="eyebrow dark">About Us</p>
+                    <h2>Built on trust, quality service, and practical solutions.</h2>
+                </div>
+
+                <p>
+                    Robo Digital Computers is a trusted technology service provider focused on delivering dependable solutions for
+                    personal, business, and office digital needs. We aim to provide quality products, honest service, and efficient support.
+                </p>
+                <p>
+                    Our work is guided by professionalism, technical expertise, and customer-first service. Whether you need a computer,
+                    repair support, printer service, CCTV setup, or digital assistance, we are here to help with the right solution.
+                </p>
+            </div>
+        </section>
+
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-head">
+                    <p class="eyebrow dark">Contact</p>
+                    <h2>Get in Touch With Robo Digital Computers</h2>
+                </div>
+
+                <div class="contact-grid">
+                    <div class="contact-card">
+                        <h3>Call Us</h3>
+                        <p><a href="tel:+918122227042">8122227042</a></p>
+                        <p><a href="tel:+918122227074">8122227074</a></p>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3>Email</h3>
+                        <p><a href="mailto:robomusiri@gmail.com">robomusiri@gmail.com</a></p>
+                    </div>
+
+                    <div class="contact-card">
+                        <h3>Visit Us</h3>
+                        <p>54A, Govt Boys School Opposite,<br>Trichy Road, Musiri,<br>Tamil Nadu 621211, India</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section contact-form-section">
+            <div class="container form-grid">
+                <div class="form-panel">
+                    <p class="eyebrow dark">Send a Message</p>
+                    <h2>Request a service callback</h2>
+                    <form class="contact-form" id="whatsapp-form">
+                        <div class="form-row two-col">
+                            <div>
+                                <label for="name">Your Name</label>
+                                <input id="name" name="name" type="text" placeholder="Enter your name" required>
+                            </div>
+                            <div>
+                                <label for="phone">Phone</label>
+                                <input id="phone" name="phone" type="tel" placeholder="Enter your phone" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label for="email">Email Address</label>
+                            <input id="email" name="email" type="email" placeholder="Enter your email">
+                        </div>
+
+                        <div class="form-row">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="Tell us about your requirement" required></textarea>
+                        </div>
+
+                        <button type="submit" class="form-btn">Send via WhatsApp</button>
+                    </form>
+                </div>
+
+                <div class="map-panel">
+                    <iframe
+                        src="https://www.google.com/maps?q=54A%20Govt%20Boys%20School%20Opposite%20Trichy%20Road%20Musiri%20Tamil%20Nadu%20621211%20India&output=embed"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <h3>ROBO DIGITAL COMPUTERS</h3>
+                <p>Trusted technology solutions for homes, offices, and businesses.</p>
+
+                <div class="social-list" aria-label="Social links">
+                    <a href="https://wa.me/918122227042" target="_blank" rel="noreferrer" class="social-link wa" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .4 5.2.4 11.6c0 2 .5 4 1.5 5.7L.3 24l6.9-1.8a11.7 11.7 0 0 0 5 1.1h.1c6.4 0 11.6-5.2 11.6-11.6 0-3.1-1.2-6-3.4-8.2ZM12.3 21.1c-1.6 0-3.2-.4-4.6-1.2l-.3-.2-4.1 1.1 1.1-4-.2-.3a9.5 9.5 0 1 1 8.1 4.6Zm5.2-7.1c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.6-.1-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.4 3.3c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.6.8.3 1.5.2 2.1.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.1-1.4Z"/></svg></a>
+                    <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" class="social-link facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-5 2.2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.6.4-1 1-1Z"/></svg></a>
+                    <a href="mailto:robomusiri@gmail.com" class="social-link mail" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 3v.5l9 5.6 9-5.6V8l-9 5.6L3 8Z"/></svg></a>
+                    <a href="tel:+918122227042" class="social-link call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 2.5 9 2l2.1 5.1-2.5 1.7a16.6 16.6 0 0 0 6.6 6.6l1.7-2.5L22 15l-.5 2.4a3 3 0 0 1-3.3 2.4C10.9 18.8 5.2 13.1 4.2 5.8a3 3 0 0 1 2.4-3.3Z"/></svg></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <a href="#home">Home</a>
+                <a href="#services">Services</a>
+                <a href="#about">About</a>
+                <a href="#contact">Contact</a>
+                <a href="{% url 'login' %}">Login</a>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Contact</h4>
+                <p>54A, Govt Boys School Opposite,<br>Trichy Road, Musiri,<br>Tamil Nadu 621211, India</p>
+                <p><a href="tel:+918122227042">8122227042</a>, <a href="tel:+918122227074">8122227074</a></p>
+                <p><a href="mailto:robomusiri@gmail.com">robomusiri@gmail.com</a></p>
+            </div>
+
+            <div class="map-card">
+                <span class="map-label">Location</span>
+                <strong>Musiri, Trichy</strong>
+                <p>Reliable service support for computer repair, digital solutions, and office technology needs.</p>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <p>© 2026 Robo Digital Computers. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <a href="https://wa.me/918122227042" class="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">WhatsApp</a>
+    <script>
+        const navigationToggle = document.querySelector('.nav-toggle');
+        const navigation = document.querySelector('.main-nav');
+        const enquiryForm = document.querySelector('#whatsapp-form');
+
+        navigationToggle.addEventListener('click', () => {
+            const isOpen = navigationToggle.getAttribute('aria-expanded') === 'true';
+            navigationToggle.setAttribute('aria-expanded', String(!isOpen));
+            navigation.classList.toggle('is-open', !isOpen);
+        });
+
+        navigation.querySelectorAll('a').forEach((link) => {
+            link.addEventListener('click', () => {
+                navigationToggle.setAttribute('aria-expanded', 'false');
+                navigation.classList.remove('is-open');
+            });
+        });
+
+        enquiryForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const formData = new FormData(enquiryForm);
+            const message = [
+                'Hello Robo Digital Computers,',
+                '',
+                `Name: ${formData.get('name')}`,
+                `Phone: ${formData.get('phone')}`,
+                `Email: ${formData.get('email') || 'Not provided'}`,
+                `Requirement: ${formData.get('message')}`
+            ].join('\n');
+            window.open(`https://wa.me/918122227042?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
+        });
+    </script>
 </body>
 </html>
