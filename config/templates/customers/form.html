@@ -1,0 +1,1 @@
+<!doctype html><html><head><title>New Customer</title></head><body><h1>New customer</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Create customer</button></form><a href="{% url 'customer_list' %}">Cancel</a></body></html>

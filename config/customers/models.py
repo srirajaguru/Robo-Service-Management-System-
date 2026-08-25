@@ -10,5 +10,13 @@ class Customer(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        if not self.customer:
+            super().save(*args, **kwargs)
+            self.customer = f"CUS-{self.created_at:%Y}-{self.pk:05d}"
+            super().save(update_fields=["customer"])
+            return
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name

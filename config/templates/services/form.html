@@ -1,0 +1,1 @@
+<!doctype html><html><head><title>New Service</title></head><body><h1>New service inward</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Create service</button></form><a href="{% url 'service_list' %}">Cancel</a></body></html>

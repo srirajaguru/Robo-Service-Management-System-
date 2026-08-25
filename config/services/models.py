@@ -10,7 +10,7 @@ class Service(models.Model):
     complaint = models.TextField()
     physical_damage = models.TextField(blank=True, null=True)
     priority = models.CharField(max_length=10, choices=[('Low', 'Low'), ('Medium', 'Medium'), ('High', 'High')])
-    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed')], default='Pending')
+    status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed'), ('Delivered', 'Delivered'), ('Cancelled', 'Cancelled')], default='Pending')
     expected_completion_date = models.DateField(blank=True, null=True)
     created_by = models.ForeignKey('accounts.StaffProfile', on_delete=models.SET_NULL, null=True, related_name='created_services')
     updated_by = models.ForeignKey('accounts.StaffProfile', on_delete=models.SET_NULL, null=True, related_name='updated_services')
@@ -18,11 +18,14 @@ class Service(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return f"SRV-{self.created_at:%Y}-{self.service:05d}" if self.created_at else f"SRV-{self.service:05d}"
+
 
 class ServiceHistory(models.Model):
     service= models.ForeignKey(Service, on_delete=models.CASCADE)
-    old_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed')])
-    new_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed'),('Returned','Returned')])
+    old_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed'), ('Delivered', 'Delivered'), ('Cancelled', 'Cancelled')])
+    new_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('In Progress', 'In Progress'), ('Completed', 'Completed'), ('Delivered', 'Delivered'), ('Cancelled', 'Cancelled')])
     changed_by = models.ForeignKey('accounts.StaffProfile', on_delete=models.SET_NULL, null=True)
     changed_at = models.DateTimeField(auto_now_add=True)
     remarks = models.TextField(blank=True, null=True)   
@@ -34,5 +37,5 @@ class ServiceProgress(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
-        return self.name
+        return f"{self.service} - {self.created_at:%Y-%m-%d}"
 

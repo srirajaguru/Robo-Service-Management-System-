@@ -10,6 +10,20 @@
     <h2>Welcome {{ request.user.username }}</h2>
 
     <p>You are logged in as Admin.</p>
+    <nav><a href="{% url 'customer_list' %}">Customers</a> | <a href="{% url 'service_list' %}">Services</a> | <a href="{% url 'ledger_list' %}">Ledger</a></nav>
+    <ul>
+        <li>Customers: {{ total_customers }}</li>
+        <li>Services: {{ total_services }}</li>
+        <li>Pending: {{ pending_services }}</li>
+        <li>In Progress: {{ in_progress_services }}</li>
+        <li>Completed: {{ completed_services }}</li>
+        <li>Delivered: {{ delivered_services }}</li>
+        <li>Overdue: {{ overdue_services }}</li>
+        <li>WhatsApp notifications: {{ notification_count }}</li>
+        <li>Outstanding: {{ outstanding_amount }}</li>
+    </ul>
+    <h2>Recent services</h2>
+    {% include "services/table.html" %}
 
     <a href="{% url 'logout' %}">
         Logout

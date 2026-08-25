@@ -1,7 +1,4 @@
-from operator import sub
-
 from django.db import models
-from services.models import Service,ServiceHistory,ServiceProgress
 
 class Expense(models.Model):
     service = models.ForeignKey('services.Service', on_delete=models.CASCADE)
@@ -39,5 +36,5 @@ class Invoice(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.invoice_number
 
