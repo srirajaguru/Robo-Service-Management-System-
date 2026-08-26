@@ -1,1 +1,132 @@
-<!doctype html><html><head><title>Customers</title></head><body><h1>Customers</h1><nav><a href="{% url 'staff_dashboard' %}">Dashboard</a> | <a href="{% url 'customer_create' %}">Add customer</a></nav><form><input name="q" value="{{ query }}" placeholder="Name, phone or customer ID"><button>Search</button></form><table border="1"><tr><th>ID</th><th>Name</th><th>Phone</th><th></th></tr>{% for customer in customers %}<tr><td>{{ customer.customer }}</td><td>{{ customer.name }}</td><td>{{ customer.phone_number }}</td><td><a href="{% url 'customer_detail' customer.pk %}">View</a></td></tr>{% empty %}<tr><td colspan="4">No customers found.</td></tr>{% endfor %}</table></body></html>
+{% extends "base.html" %}
+
+{% block title %}Customer Directory{% endblock %}
+{% block breadcrumb %}Customers{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="brand-font mb-1">Customer CRM Directory</h2>
+        <p class="text-muted mb-0">Total {{ total_customers_count }} registered customers in ROBO DIGITAL database.</p>
+    </div>
+    <a href="{% url 'customer_create' %}" class="btn btn-primary shadow-sm">
+        <i class="bi bi-person-plus-fill me-1"></i> Register New Customer
+    </a>
+</div>
+
+<!-- Search Bar -->
+<div class="card card-luxury p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-9">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by customer name, phone number, Customer ID (e.g. CUS-2026-00001), or address...">
+            </div>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i> Search</button>
+            {% if query %}
+                <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary" title="Reset Search"><i class="bi bi-x-lg"></i></a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Customers Table -->
+<div class="card card-luxury">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Customer ID</th>
+                    <th>Customer Name</th>
+                    <th>Contact Phone</th>
+                    <th>Location / Address</th>
+                    <th>Services</th>
+                    <th>Registered</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in customers %}
+                <tr>
+                    <td>
+                        <a href="{% url 'customer_detail' c.pk %}" class="fw-bold text-decoration-none text-primary">
+                            {{ c.customer_id }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'customer_detail' c.pk %}" class="text-decoration-none text-dark fw-bold">
+                            {{ c.name }}
+                        </a>
+                        {% if c.email %}
+                            <div class="text-muted small" style="font-size: 11px;">{{ c.email }}</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div>
+                            <a href="tel:{{ c.phone_number }}" class="text-decoration-none text-dark fw-semibold">
+                                <i class="bi bi-telephone-outbound text-primary me-1"></i> {{ c.phone_number }}
+                            </a>
+                            <a href="https://wa.me/91{{ c.phone_number }}" target="_blank" class="text-success ms-1" title="Chat on WhatsApp">
+                                <i class="bi bi-whatsapp"></i>
+                            </a>
+                        </div>
+                        {% if c.alternate_phone %}
+                            <small class="text-muted" style="font-size: 11px;">Alt: {{ c.alternate_phone }}</small>
+                        {% endif %}
+                    </td>
+                    <td class="small" style="max-width: 250px;">
+                        <div class="text-truncate">{{ c.address|default:"Musiri / Trichy" }}</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary-subtle text-primary rounded-pill px-2 py-1">
+                            {{ c.total_services }} Service{{ c.total_services|pluralize }}
+                        </span>
+                        {% if c.pending_services > 0 or c.in_progress_services > 0 %}
+                            <span class="badge bg-warning-subtle text-warning rounded-pill px-2 py-1 ms-1">Active</span>
+                        {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ c.created_at|date:"d-M-Y" }}</td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'customer_detail' c.pk %}" class="btn btn-outline-primary" title="View Customer Profile">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                            <a href="{% url 'service_create' %}?selected_customer={{ c.pk }}" class="btn btn-primary" title="Create New Service Inward for this customer">
+                                <i class="bi bi-plus-lg"></i> Inward
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-people fs-1 d-block mb-2 text-secondary"></i>
+                        No customer records found matching your search.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
+        <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} customers</small>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">&laquo; Previous</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}">Next &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

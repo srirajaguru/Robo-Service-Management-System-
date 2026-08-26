@@ -1,1 +1,173 @@
-<!doctype html><html><head><title>Ledger</title></head><body><h1>Service ledger</h1><a href="{% url 'admin_dashboard' %}">Admin dashboard</a><h2>Entries</h2>{% for entry in entries %}<p>{{ entry.created_at }} | {{ entry.service }} | {{ entry.action }} | {{ entry.amount }} | {{ entry.description }}</p>{% empty %}<p>No ledger entries.</p>{% endfor %}<h2>Recent expenses</h2>{% for expense in expenses %}<p>{{ expense.service }}: {{ expense.description }} - {{ expense.amount }}</p>{% empty %}<p>No expenses.</p>{% endfor %}<h2>Recent payments</h2>{% for payment in payments %}<p>{{ payment.service }}: {{ payment.amount }} via {{ payment.payment_method }}</p>{% empty %}<p>No payments.</p>{% endfor %}</body></html>
+{% extends "base.html" %}
+
+{% block title %}Service Ledger{% endblock %}
+{% block breadcrumb %}Financial Ledger{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="brand-font mb-1">Service & Financial Ledger</h2>
+        <p class="text-muted mb-0">Append-oriented historical audit trail of all service transactions, updates, and payments.</p>
+    </div>
+    {% if request.user.is_superuser or request.user.staffprofile.role == 'Admin' %}
+    <div class="d-flex gap-2">
+        <a href="{% url 'reports_monthly' %}" class="btn btn-outline-primary">
+            <i class="bi bi-file-earmark-bar-graph me-1"></i> Monthly Report
+        </a>
+        <a href="{% url 'reports_yearly' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-graph-up me-1"></i> Yearly Summary
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Financial Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-luxury p-3 text-center border-bottom border-4 border-primary">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Billed Revenue</small>
+            <h4 class="brand-font text-primary mt-1 mb-0">₹{{ total_revenue|floatformat:2 }}</h4>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-luxury p-3 text-center border-bottom border-4 border-warning">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Parts & Expenses</small>
+            <h4 class="brand-font text-warning mt-1 mb-0">₹{{ total_expenses|floatformat:2 }}</h4>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-luxury p-3 text-center border-bottom border-4 border-success">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Net Service Margin</small>
+            <h4 class="brand-font text-success mt-1 mb-0">₹{{ net_margin|floatformat:2 }}</h4>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="card card-luxury p-3 text-center border-bottom border-4 border-danger">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Collected / Outstanding</small>
+            <h4 class="brand-font text-dark mt-1 mb-0">
+                <span class="text-success">₹{{ total_collected|floatformat:0 }}</span> / 
+                <span class="text-danger">₹{{ total_outstanding|floatformat:0 }}</span>
+            </h4>
+        </div>
+    </div>
+</div>
+
+<!-- Filters and Search -->
+<div class="card card-luxury p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search by Service ID, Customer name, or action notes...">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <select name="action" class="form-select">
+                <option value="">All Action Types</option>
+                {% for code, label in action_choices %}
+                    <option value="{{ code }}" {% if action_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i> Filter</button>
+            {% if query or action_filter %}
+                <a href="{% url 'ledger_list' %}" class="btn btn-outline-secondary" title="Reset Filters"><i class="bi bi-x-lg"></i></a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Ledger Entries Table -->
+<div class="card card-luxury">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Service ID</th>
+                    <th>Customer</th>
+                    <th>Action</th>
+                    <th>Description</th>
+                    <th>Amount (₹)</th>
+                    <th>Staff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in entries %}
+                <tr>
+                    <td class="small text-muted" style="white-space: nowrap;">
+                        {{ entry.created_at|date:"d-M-Y" }}<br>
+                        <small>{{ entry.created_at|date:"h:i A" }}</small>
+                    </td>
+                    <td>
+                        <a href="{% url 'service_detail' entry.service.pk %}" class="fw-bold font-monospace text-primary text-decoration-none">
+                            {{ entry.service.service_id }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'customer_detail' entry.service.customer.pk %}" class="text-dark fw-semibold text-decoration-none small">
+                            {{ entry.service.customer.name }}
+                        </a>
+                    </td>
+                    <td>
+                        <span class="badge {% if entry.action == 'Payment Received' %}bg-success-subtle text-success{% elif entry.action == 'Expense Added' %}bg-warning-subtle text-warning{% elif entry.action == 'Invoice Generated' %}bg-info-subtle text-info{% else %}bg-secondary-subtle text-dark{% endif %}">
+                            {{ entry.action }}
+                        </span>
+                    </td>
+                    <td class="small" style="max-width: 320px;">
+                        {{ entry.description }}
+                    </td>
+                    <td class="small fw-bold">
+                        {% if entry.amount %}
+                            {% if entry.action == 'Payment Received' %}
+                                <span class="text-success">+ ₹{{ entry.amount|floatformat:2 }}</span>
+                            {% elif entry.action == 'Expense Added' %}
+                                <span class="text-warning">- ₹{{ entry.amount|floatformat:2 }}</span>
+                            {% else %}
+                                <span>₹{{ entry.amount|floatformat:2 }}</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="small text-muted">
+                        {{ entry.created_by.name|default:"System" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-journal-x fs-1 d-block mb-2 text-secondary"></i>
+                        No ledger entries found matching your query.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
+        <small class="text-muted">Showing page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</small>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}">&laquo; Previous</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if action_filter %}&action={{ action_filter }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Next &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

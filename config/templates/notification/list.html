@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}WhatsApp Notification Logs{% endblock %}
+{% block breadcrumb %}Notifications / WhatsApp History{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="brand-font mb-1">WhatsApp Cloud Notifications Log</h2>
+        <p class="text-muted mb-0">Automated customer messages sent for service inwards, completions, and payments.</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card card-luxury p-3 mb-4">
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+        <span class="text-muted small fw-semibold me-2"><i class="bi bi-funnel me-1"></i>Filter Status:</span>
+        <a href="{% url 'notification_list' %}" class="btn btn-sm {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+            All Notifications
+        </a>
+        <a href="{% url 'notification_list' %}?status=Sent" class="btn btn-sm {% if status_filter == 'Sent' %}btn-success{% else %}btn-outline-success{% endif %}">
+            Sent (API)
+        </a>
+        <a href="{% url 'notification_list' %}?status=Simulated" class="btn btn-sm {% if status_filter == 'Simulated' %}btn-info text-dark{% else %}btn-outline-info{% endif %}">
+            Simulated (Dev Mode)
+        </a>
+        <a href="{% url 'notification_list' %}?status=Failed" class="btn btn-sm {% if status_filter == 'Failed' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            Failed
+        </a>
+    </div>
+</div>
+
+<!-- Notifications Table -->
+<div class="card card-luxury">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Type</th>
+                    <th>Recipient</th>
+                    <th>Service ID</th>
+                    <th>Message Details</th>
+                    <th>Status</th>
+                    <th>Logged Response</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for n in notifications %}
+                <tr>
+                    <td class="small text-muted" style="white-space: nowrap;">
+                        {{ n.sent_at|date:"d-M-Y" }}<br>
+                        <small>{{ n.sent_at|date:"h:i A" }}</small>
+                    </td>
+                    <td>
+                        <span class="badge {% if n.notification_type == 'Inward' %}bg-primary-subtle text-primary{% elif n.notification_type == 'Completed' %}bg-success-subtle text-success{% else %}bg-secondary-subtle text-dark{% endif %}">
+                            {{ n.notification_type }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="fw-bold">{{ n.customer.name|default:"Direct" }}</div>
+                        <a href="https://wa.me/{{ n.phone_number }}" target="_blank" class="small text-success text-decoration-none">
+                            <i class="bi bi-whatsapp"></i> {{ n.phone_number }}
+                        </a>
+                    </td>
+                    <td>
+                        {% if n.service %}
+                            <a href="{% url 'service_detail' n.service.pk %}" class="fw-bold font-monospace text-primary text-decoration-none">
+                                {{ n.service.service_id }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
+                    <td class="small" style="max-width: 300px;">
+                        <div class="text-truncate" title="{{ n.message }}">{{ n.message }}</div>
+                    </td>
+                    <td>
+                        <span class="badge {% if n.status == 'Sent' %}bg-success{% elif n.status == 'Simulated' %}bg-info text-dark{% else %}bg-danger{% endif %}">
+                            {{ n.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="small text-muted" style="max-width: 200px;">
+                        <div class="text-truncate" title="{{ n.response_log }}">{{ n.response_log|default:"-" }}</div>
+                    </td>
+                    <td class="text-end">
+                        <a href="{% url 'notification_resend' n.pk %}" class="btn btn-sm btn-outline-primary py-1 px-2" title="Retry sending notification">
+                            <i class="bi bi-arrow-repeat"></i> Retry
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="bi bi-whatsapp fs-1 d-block mb-2 text-success"></i>
+                        No WhatsApp notifications recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

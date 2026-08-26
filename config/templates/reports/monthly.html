@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Monthly Business Report - {{ month_name }} {{ year }}{% endblock %}
+{% block breadcrumb %}Reports / Monthly Report{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="brand-font mb-1">Monthly Operational & Financial Report</h2>
+        <p class="text-muted mb-0">Summary of all services, billed revenue, parts cost, and collections for <strong>{{ month_name }} {{ year }}</strong>.</p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'export_monthly_csv' %}?year={{ year }}&month={{ month }}" class="btn btn-outline-success shadow-sm">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export to CSV
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Print
+        </button>
+    </div>
+</div>
+
+<!-- Month & Year Selector Form -->
+<div class="card card-luxury p-3 mb-4 no-print">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">Select Month</label>
+            <select name="month" class="form-select">
+                {% for m_num, m_name in months_list %}
+                    <option value="{{ m_num }}" {% if month == m_num %}selected{% endif %}>{{ m_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">Select Year</label>
+            <select name="year" class="form-select">
+                {% for y in years_list %}
+                    <option value="{{ y }}" {% if year == y %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-arrow-clockwise me-1"></i> Generate Report</button>
+        </div>
+    </form>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="card card-luxury p-3 text-center border-top border-4 border-primary">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Total Services</small>
+            <h4 class="brand-font text-primary mt-1 mb-0">{{ total_services }} ({{ completed_count }} Done)</h4>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card card-luxury p-3 text-center border-top border-4 border-primary">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Billed Revenue</small>
+            <h4 class="brand-font text-dark mt-1 mb-0">₹{{ total_billed|floatformat:2 }}</h4>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card card-luxury p-3 text-center border-top border-4 border-warning">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Parts & Expenses</small>
+            <h4 class="brand-font text-warning mt-1 mb-0">₹{{ total_parts|floatformat:2 }}</h4>
+        </div>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <div class="card card-luxury p-3 text-center border-top border-4 border-success">
+            <small class="text-muted text-uppercase fw-bold" style="font-size: 11px;">Net Margin / Profit</small>
+            <h4 class="brand-font text-success mt-1 mb-0">₹{{ net_profit|floatformat:2 }}</h4>
+        </div>
+    </div>
+</div>
+
+<!-- Report Table -->
+<div class="card card-luxury">
+    <div class="table-responsive">
+        <table class="table table-hover table-sm align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Service ID</th>
+                    <th>Customer</th>
+                    <th>Device</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Staff</th>
+                    <th class="text-end">Labor</th>
+                    <th class="text-end">Parts</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Paid</th>
+                    <th class="text-end">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr>
+                    <td>
+                        <a href="{% url 'service_detail' s.pk %}" class="fw-bold font-monospace text-primary text-decoration-none">
+                            {{ s.service_id }}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{% url 'customer_detail' s.customer.pk %}" class="text-dark fw-semibold text-decoration-none small">
+                            {{ s.customer.name }}
+                        </a>
+                    </td>
+                    <td class="small">{{ s.device_type }} - {{ s.brand }}</td>
+                    <td class="small text-muted">{{ s.created_at|date:"d-M" }}</td>
+                    <td>
+                        <span class="badge-status status-{{ s.status|lower|cut:' ' }}" style="font-size: 11px;">
+                            {{ s.status }}
+                        </span>
+                    </td>
+                    <td class="small text-muted">{{ s.created_by.name|default:"-" }}</td>
+                    <td class="text-end small">₹{{ s.service_charge|floatformat:2 }}</td>
+                    <td class="text-end small text-warning">₹{{ s.total_expenses|floatformat:2 }}</td>
+                    <td class="text-end small fw-bold">₹{{ s.total_amount|floatformat:2 }}</td>
+                    <td class="text-end small text-success">₹{{ s.total_paid|floatformat:2 }}</td>
+                    <td class="text-end small fw-bold {% if s.balance_amount > 0 %}text-danger{% else %}text-muted{% endif %}">
+                        ₹{{ s.balance_amount|floatformat:2 }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" class="text-center py-5 text-muted">
+                        No services registered for {{ month_name }} {{ year }}.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td colspan="6">TOTALS:</td>
+                    <td class="text-end">-</td>
+                    <td class="text-end text-warning">₹{{ total_parts|floatformat:2 }}</td>
+                    <td class="text-end text-primary">₹{{ total_billed|floatformat:2 }}</td>
+                    <td class="text-end text-success">₹{{ total_collected|floatformat:2 }}</td>
+                    <td class="text-end text-danger">₹{{ total_outstanding|floatformat:2 }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

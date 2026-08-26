@@ -4,284 +4,748 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Robo Digital Computers offers professional computer sales, repair, printer support, CCTV installation, UPS service, and digital solutions in Musiri, Trichy.">
-    <title>Robo Digital Computers</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <meta name="description" content="ROBO DIGITAL COMPUTERS - Leading Computer Sales & Service, Laptop Chip-Level Motherboard Repair, CCTV Camera Installation, Printer & UPS Service, and Digital Solutions in Musiri, Trichy.">
+    <title>ROBO DIGITAL COMPUTERS - Sales, Service & Digital Solutions | Musiri, Trichy</title>
+
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --brand-primary: #0284c7;
+            --brand-primary-dark: #0369a1;
+            --brand-accent: #38bdf8;
+            --brand-dark: #0f172a;
+            --brand-dark-surface: #1e293b;
+            --brand-gold: #f59e0b;
+            --brand-emerald: #10b981;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #334155;
+            background-color: #ffffff;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-font {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Header Navigation */
+        .site-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+            transition: all 0.3s ease;
+        }
+
+        .brand-logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-badge-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.45);
+        }
+
+        .nav-link-custom {
+            color: #cbd5e1 !important;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 8px 16px !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link-custom:hover {
+            color: #38bdf8 !important;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* Hero Section */
+        .hero-section {
+            background: radial-gradient(circle at 85% 20%, rgba(2, 132, 199, 0.28) 0%, rgba(15, 23, 42, 1) 65%);
+            color: #ffffff;
+            padding: 100px 0 90px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .hero-pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            background: rgba(2, 132, 199, 0.18);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            color: #38bdf8;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.4rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+        }
+
+        .hero-title .text-gradient {
+            background: linear-gradient(135deg, #38bdf8 0%, #60a5fa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            font-weight: 400;
+            line-height: 1.65;
+            max-width: 600px;
+        }
+
+        /* High-Tech Feature Showcase Card (Replaces Tracker Widget) */
+        .tech-showcase-card {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .tech-showcase-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .tech-showcase-item:hover {
+            background: rgba(15, 23, 42, 0.9);
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateX(4px);
+        }
+
+        .tech-item-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: rgba(2, 132, 199, 0.2);
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        /* 7 Core Services Grid */
+        .service-card-main {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 34px 28px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .service-card-main:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 35px rgba(2, 132, 199, 0.12);
+            border-color: #93c5fd;
+        }
+
+        .service-icon-box {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: #eff6ff;
+            color: #0284c7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin-bottom: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .service-card-main:hover .service-icon-box {
+            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            color: #ffffff;
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.3);
+        }
+
+        .service-card-main h4 {
+            font-size: 1.25rem;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .service-card-main p {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        /* Why Choose Us & Trust Container */
+        .trust-metrics-card {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .metric-number {
+            font-size: 2.75rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        /* Floating WhatsApp Button */
+        .floating-wa-btn {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            width: 62px;
+            height: 62px;
+            background: #25d366;
+            color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.45);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .floating-wa-btn:hover {
+            transform: scale(1.12);
+            color: #ffffff;
+            box-shadow: 0 12px 30px rgba(37, 211, 102, 0.6);
+        }
+
+        .floating-wa-btn::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: #25d366;
+            opacity: 0.6;
+            z-index: -1;
+            animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
+
+        @media (max-width: 991px) {
+            .hero-section {
+                padding: 70px 0 60px;
+            }
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
 </head>
-<body class="luxury-theme">
-    <header class="topbar">
-        <div class="container nav-wrap">
-            <div class="brand-box">
-                <div class="brand-mark">R</div>
-                <div>
-                    <span class="brand-name">ROBO DIGITAL COMPUTERS</span>
-                    <small>Trusted Solutions for Every Digital Need</small>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="site-header py-2">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="#home" class="brand-logo-box">
+                <div class="brand-badge-icon">
+                    <i class="bi bi-cpu-fill"></i>
                 </div>
-            </div>
-            <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span class="sr-only">Toggle navigation</span>
-            </button>
-            <nav id="main-navigation" class="main-nav" aria-label="Main navigation">
-                <a href="#home">Home</a>
-                <a href="#services">Services</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-                <a href="{% url 'login' %}" class="nav-login">Login</a>
+                <div>
+                    <h5 class="text-white mb-0 brand-font" style="letter-spacing: 0.5px;">ROBO DIGITAL COMPUTERS</h5>
+                    <small class="text-info" style="font-size: 11px;">Sales, Service & Digital Solutions • Musiri</small>
+                </div>
+            </a>
+
+            <nav class="d-none d-lg-flex align-items-center gap-1">
+                <a href="#home" class="nav-link-custom">Home</a>
+                <a href="#services" class="nav-link-custom">Services</a>
+                <a href="{% url 'track' %}" class="nav-link-custom"><i class="bi bi-search me-1"></i> Track Service</a>
+                <a href="#about" class="nav-link-custom">About Us</a>
+                <a href="#contact" class="nav-link-custom">Contact</a>
             </nav>
+
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'track' %}" class="btn btn-outline-light btn-sm px-3 rounded-pill d-none d-md-inline-flex align-items-center gap-1">
+                    <i class="bi bi-search"></i> Track Status
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-info btn-sm px-3 rounded-pill">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Login
+                </a>
+                <a href="https://wa.me/918122227042" target="_blank" class="btn btn-success btn-sm px-3 rounded-pill d-none d-sm-inline-flex align-items-center gap-1">
+                    <i class="bi bi-whatsapp"></i> WhatsApp
+                </a>
+            </div>
         </div>
     </header>
 
-    <main>
-        <section id="home" class="hero">
-            <div class="container hero-content">
-                <div class="hero-visual">
-                    <div class="logo-panel">
-                        <div class="panel-screen">
-                            <span class="screen-line"></span>
-                            <span class="screen-line short"></span>
-                            <span class="screen-line"></span>
+    <!-- Hero Section (Clean 2-Column Showcase without Tracker) -->
+    <section id="home" class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center g-5">
+                <!-- Left Hero Content -->
+                <div class="col-lg-7">
+                    <div class="hero-pill-badge">
+                        <i class="bi bi-patch-check-fill"></i> Trusted Technical Center in Musiri, Trichy
+                    </div>
+                    
+                    <h1 class="hero-title mb-3">
+                        ROBO <span class="text-gradient">DIGITAL</span> COMPUTERS
+                    </h1>
+                    
+                    <p class="hero-subtitle mb-4">
+                        Your complete destination for computer sales, advanced laptop chip-level repair, CCTV surveillance installation, printer/UPS maintenance, and digital online government services.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3 mb-4">
+                        <a href="#services" class="btn btn-primary btn-lg rounded-pill px-4 shadow">
+                            <i class="bi bi-grid-fill me-2"></i> Explore 7 Core Services
+                        </a>
+                        <a href="{% url 'track' %}" class="btn btn-outline-info btn-lg rounded-pill px-4">
+                            <i class="bi bi-search me-2"></i> Track Service Status
+                        </a>
+                        <a href="https://wa.me/918122227042" target="_blank" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                            <i class="bi bi-whatsapp me-2"></i> Direct Chat
+                        </a>
+                    </div>
+
+                    <div class="d-flex flex-wrap align-items-center gap-4 text-white-50 small pt-2">
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Chip Level BGA Lab</div>
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Genuine OEM Spares</div>
+                        <div><i class="bi bi-check-circle-fill text-success me-1"></i> Automated WhatsApp Updates</div>
+                    </div>
+                </div>
+
+                <!-- Right Hero Feature Showcase Box -->
+                <div class="col-lg-5">
+                    <div class="tech-showcase-card text-white">
+                        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                            <h5 class="mb-0 brand-font text-white">
+                                <i class="bi bi-shield-check text-info me-2"></i>Certified Service Lab
+                            </h5>
+                            <span class="badge bg-success-subtle text-success px-2 py-1 rounded-pill small">Open Mon - Sat</span>
                         </div>
-                        <div class="logo-title">
-                            <h1>ROBO</h1>
-                            <h2>DIGITAL COMPUTERS</h2>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="hero-copy">
-                    <p class="eyebrow">Professional Computer & Digital Solution Center</p>
-                    <h3>Reliable technology support for homes, students, and businesses.</h3>
-                    <ul class="feature-list">
-                        <li>Computer Sales & Service</li>
-                        <li>Laptop Chip Level Service</li>
-                        <li>CCTV Camera Installation</li>
-                        <li>Printer & UPS Sales & Service</li>
-                        <li>Xerox & Color Print & Scan</li>
-                        <li>All Type Online Work</li>
-                        
-                    </ul>
-                    <div class="hero-actions">
-                        <a href="#services" class="btn btn-primary">Our Services</a>
-                        <a href="#contact" class="btn btn-secondary">Contact Us</a>
-                    </div>
-                </div>
-            </div>
-
-            
-        </section>
-
-        <section id="services" class="section">
-            <div class="container">
-                <div class="section-head">
-                    <p class="eyebrow dark">Our Expertise</p>
-                    <h2>Complete Tech Solutions Under One Roof</h2>
-                </div>
-
-                <div class="services-grid">
-                    <article class="service-card">
-                        <div class="service-icon">01</div>
-                        <h3>Computer Sales & Service</h3>
-                        <p>We supply dependable desktops, laptops, accessories, and computer components suited to your needs and budget.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">02</div>
-                        <h3>Laptop Sales & Service</h3>
-                        <p>From routine maintenance to complex device repairs, we help restore performance and keep systems running smoothly.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">03</div>
-                        <h3>Printer & UPS Service</h3>
-                        <p>Professional printer maintenance, UPS support, and repair services to minimize downtime in home or office setups.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">04</div>
-                        <h3>CCTV Installation</h3>
-                        <p>Secure your premises with reliable surveillance systems, installation support, and practical guidance for safer spaces.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">05</div>
-                        <h3>Chip Level Repair</h3>
-                        <p>Expert laptop repair and chip-level diagnostics for advanced technical issues that require careful handling.</p>
-                    </article>
-
-                    <article class="service-card">
-                        <div class="service-icon">06</div>
-                        <h3>Digital Support</h3>
-                        <p>We provide typing, online work assistance, print/scan support, and other digital help for everyday productivity.</p>
-                    </article>
-                </div>
-            </div>
-        </section>
-
-        <section id="about" class="section about-section">
-            <div class="container about-box">
-                <div class="section-head left-align">
-                    <p class="eyebrow dark">About Us</p>
-                    <h2>Built on trust, quality service, and practical solutions.</h2>
-                </div>
-
-                <p>
-                    Robo Digital Computers is a trusted technology service provider focused on delivering dependable solutions for
-                    personal, business, and office digital needs. We aim to provide quality products, honest service, and efficient support.
-                </p>
-                <p>
-                    Our work is guided by professionalism, technical expertise, and customer-first service. Whether you need a computer,
-                    repair support, printer service, CCTV setup, or digital assistance, we are here to help with the right solution.
-                </p>
-            </div>
-        </section>
-
-        <section id="contact" class="section contact-section">
-            <div class="container">
-                <div class="section-head">
-                    <p class="eyebrow dark">Contact</p>
-                    <h2>Get in Touch With Robo Digital Computers</h2>
-                </div>
-
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <h3>Call Us</h3>
-                        <p><a href="tel:+918122227042">8122227042</a></p>
-                        <p><a href="tel:+918122227074">8122227074</a></p>
-                    </div>
-
-                    <div class="contact-card">
-                        <h3>Email</h3>
-                        <p><a href="mailto:robomusiri@gmail.com">robomusiri@gmail.com</a></p>
-                    </div>
-
-                    <div class="contact-card">
-                        <h3>Visit Us</h3>
-                        <p>54A, Govt Boys School Opposite,<br>Trichy Road, Musiri,<br>Tamil Nadu 621211, India</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="section contact-form-section">
-            <div class="container form-grid">
-                <div class="form-panel">
-                    <p class="eyebrow dark">Send a Message</p>
-                    <h2>Request a service callback</h2>
-                    <form class="contact-form" id="whatsapp-form">
-                        <div class="form-row two-col">
-                            <div>
-                                <label for="name">Your Name</label>
-                                <input id="name" name="name" type="text" placeholder="Enter your name" required>
+                        <div class="tech-showcase-item">
+                            <div class="tech-item-icon">
+                                <i class="bi bi-cpu"></i>
                             </div>
                             <div>
-                                <label for="phone">Phone</label>
-                                <input id="phone" name="phone" type="tel" placeholder="Enter your phone" required>
+                                <h6 class="mb-1 text-white fw-bold">Motherboard Chip-Level Repair</h6>
+                                <p class="mb-0 text-white-50 small">Advanced power circuit diagnosis, short removal & BGA rework.</p>
                             </div>
                         </div>
 
-                        <div class="form-row">
-                            <label for="email">Email Address</label>
-                            <input id="email" name="email" type="email" placeholder="Enter your email">
+                        <div class="tech-showcase-item">
+                            <div class="tech-item-icon">
+                                <i class="bi bi-camera-video"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 text-white fw-bold">CCTV & Security Solutions</h6>
+                                <p class="mb-0 text-white-50 small">HD & IP camera setup, mobile live streaming, and DVR/NVR maintenance.</p>
+                            </div>
                         </div>
 
-                        <div class="form-row">
-                            <label for="message">Message</label>
-                            <textarea id="message" name="message" rows="5" placeholder="Tell us about your requirement" required></textarea>
+                        <div class="tech-showcase-item">
+                            <div class="tech-item-icon">
+                                <i class="bi bi-printer"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 text-white fw-bold">Printer & UPS Diagnostics</h6>
+                                <p class="mb-0 text-white-50 small">Head cleaning, toner refilling, and backup battery health checks.</p>
+                            </div>
                         </div>
 
-                        <button type="submit" class="form-btn">Send via WhatsApp</button>
-                    </form>
+                        <div class="tech-showcase-item">
+                            <div class="tech-item-icon">
+                                <i class="bi bi-whatsapp"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-1 text-white fw-bold">Realtime Service Alerts</h6>
+                                <p class="mb-0 text-white-50 small">Instant WhatsApp updates on inward receipt and repair completion.</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 d-flex justify-content-between align-items-center text-white-50 small">
+                            <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> Musiri, Trichy</span>
+                            <a href="tel:+918122227042" class="text-info text-decoration-none fw-bold">Helpline: 8122227042</a>
+                        </div>
+                    </div>
                 </div>
-
-                <div class="map-panel">
-                    <iframe
-                        src="https://www.google.com/maps?q=54A%20Govt%20Boys%20School%20Opposite%20Trichy%20Road%20Musiri%20Tamil%20Nadu%20621211%20India&output=embed"
-                        loading="lazy"
-                        referrerpolicy="no-referrer-when-downgrade"
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div class="footer-brand">
-                <h3>ROBO DIGITAL COMPUTERS</h3>
-                <p>Trusted technology solutions for homes, offices, and businesses.</p>
-
-                <div class="social-list" aria-label="Social links">
-                    <a href="https://wa.me/918122227042" target="_blank" rel="noreferrer" class="social-link wa" aria-label="WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.8 11.8 0 0 0 12.1 0C5.6 0 .4 5.2.4 11.6c0 2 .5 4 1.5 5.7L.3 24l6.9-1.8a11.7 11.7 0 0 0 5 1.1h.1c6.4 0 11.6-5.2 11.6-11.6 0-3.1-1.2-6-3.4-8.2ZM12.3 21.1c-1.6 0-3.2-.4-4.6-1.2l-.3-.2-4.1 1.1 1.1-4-.2-.3a9.5 9.5 0 1 1 8.1 4.6Zm5.2-7.1c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-1 1.2-.2.2-.4.2-.7.1-.3-.2-1.3-.5-2.5-1.6-.9-.8-1.6-1.8-1.8-2.1-.2-.3 0-.5.1-.7l.5-.6c.2-.2.2-.4.3-.6.1-.2 0-.5 0-.6-.1-.2-.7-1.7-1-2.3-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.7s1.2 3.1 1.4 3.3c.2.2 2.3 3.5 5.6 4.9.8.3 1.4.5 1.9.6.8.3 1.5.2 2.1.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.1-1.4Z"/></svg></a>
-                    <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" class="social-link facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8h3V4h-3c-2.8 0-5 2.2-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9c0-.6.4-1 1-1Z"/></svg></a>
-                    <a href="mailto:robomusiri@gmail.com" class="social-link mail" aria-label="Email"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm0 3v.5l9 5.6 9-5.6V8l-9 5.6L3 8Z"/></svg></a>
-                    <a href="tel:+918122227042" class="social-link call" aria-label="Call"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 2.5 9 2l2.1 5.1-2.5 1.7a16.6 16.6 0 0 0 6.6 6.6l1.7-2.5L22 15l-.5 2.4a3 3 0 0 1-3.3 2.4C10.9 18.8 5.2 13.1 4.2 5.8a3 3 0 0 1 2.4-3.3Z"/></svg></a>
-                </div>
-            </div>
-
-            <div class="footer-links">
-                <h4>Quick Links</h4>
-                <a href="#home">Home</a>
-                <a href="#services">Services</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-                <a href="{% url 'login' %}">Login</a>
-            </div>
-
-            <div class="footer-contact">
-                <h4>Contact</h4>
-                <p>54A, Govt Boys School Opposite,<br>Trichy Road, Musiri,<br>Tamil Nadu 621211, India</p>
-                <p><a href="tel:+918122227042">8122227042</a>, <a href="tel:+918122227074">8122227074</a></p>
-                <p><a href="mailto:robomusiri@gmail.com">robomusiri@gmail.com</a></p>
-            </div>
-
-            <div class="map-card">
-                <span class="map-label">Location</span>
-                <strong>Musiri, Trichy</strong>
-                <p>Reliable service support for computer repair, digital solutions, and office technology needs.</p>
             </div>
         </div>
+    </section>
 
-        <div class="container footer-bottom">
-            <p>© 2026 Robo Digital Computers. All Rights Reserved.</p>
+    <!-- 7 Core Company Services Section -->
+    <section id="services" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill text-uppercase fw-bold mb-2">Our Expertise</span>
+                <h2 class="display-6 brand-font fw-bold">Complete Technology & Digital Services</h2>
+                <p class="text-muted mx-auto" style="max-width: 650px;">
+                    Professional sales, diagnostics, hardware repairs, and digital services executed by certified technicians under one roof.
+                </p>
+            </div>
+
+            <div class="row g-4">
+                <!-- 1. Computer Sales & Service -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-display"></i></div>
+                        <h4 class="brand-font">1. Computer Sales & Service</h4>
+                        <p>
+                            New desktop & laptop sales, assembled custom gaming/office PCs, OS installation, virus removal, hardware upgrades (SSD, RAM), and routine maintenance.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20am%20interested%20in%20Computer%20Sales%20and%20Service" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. Laptop Chip Level Service -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-cpu"></i></div>
+                        <h4 class="brand-font">2. Laptop Chip Level Service</h4>
+                        <p>
+                            Advanced motherboard diagnosis, power section short repair, BGA IC rework, broken hinge fabrication, display replacement, and liquid spill rescue.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20Laptop%20Chip%20Level%20Service" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. CCTV Camera Installation -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-camera-video"></i></div>
+                        <h4 class="brand-font">3. CCTV Camera Installation</h4>
+                        <p>
+                            Complete surveillance solutions for homes, shops, schools, and offices. HD & IP Cameras, DVR/NVR setup, mobile live viewing, and annual maintenance.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20CCTV%20Camera%20Installation" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. Printer & UPS Sales & Service -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-printer"></i></div>
+                        <h4 class="brand-font">4. Printer & UPS Sales & Service</h4>
+                        <p>
+                            All-in-one printer head cleaning, roller service, cartridge refilling, toner replacement, and UPS backup battery testing & replacement.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20Printer%20or%20UPS%20Service" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 5. Xerox, Color Print & Scan -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-file-earmark-text"></i></div>
+                        <h4 class="brand-font">5. Xerox, Color Print & Scan</h4>
+                        <p>
+                            High-speed Xerox copies, vibrant color printing, high-resolution document scanning, lamination, and spiral binding for projects and legal documents.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20Print%20and%20Scanning%20Services" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 6. All Type Online Work -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-globe2"></i></div>
+                        <h4 class="brand-font">6. All Type Online Work</h4>
+                        <p>
+                            Government online exam applications (TNPSC, TRB, SSC), Aadhaar/PAN/Voter ID online assistance, certificates, and digital portal submissions.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20Online%20Work%20Assistance" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 7. Tamil & English Typing -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="service-card-main">
+                        <div class="service-icon-box"><i class="bi bi-keyboard"></i></div>
+                        <h4 class="brand-font">7. Tamil & English Typing</h4>
+                        <p>
+                            Fast and accurate Tamil and English typing, legal documents, deeds, resumes, project reports, and official letter drafting.
+                        </p>
+                        <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20I%20need%20Typing%20Services" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill mt-auto">
+                            Inquire on WhatsApp <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section id="about" class="py-5 bg-white">
+        <div class="container py-4">
+            <div class="row align-items-center g-5">
+                <div class="col-lg-6">
+                    <span class="badge bg-info-subtle text-info px-3 py-2 rounded-pill fw-bold mb-2">Why ROBO Digital</span>
+                    <h2 class="display-6 brand-font fw-bold mb-4">Precision, Speed & Complete Transparency</h2>
+                    <p class="text-muted mb-4">
+                        At ROBO DIGITAL COMPUTERS, we combine state-of-the-art diagnostic equipment with deep chip-level engineering expertise to deliver dependable technology solutions across Musiri and Trichy district.
+                    </p>
+
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex gap-3">
+                            <div class="text-primary fs-3"><i class="bi bi-cpu-fill"></i></div>
+                            <div>
+                                <h5 class="mb-1">Chip-Level Motherboard Specialists</h5>
+                                <p class="text-muted small">We fix component-level failures instead of recommending costly full motherboard replacements.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <div class="text-success fs-3"><i class="bi bi-whatsapp"></i></div>
+                            <div>
+                                <h5 class="mb-1">Automated WhatsApp Status Updates</h5>
+                                <p class="text-muted small">Receive instant notification upon device inward receipt and service completion directly on your WhatsApp.</p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3">
+                            <div class="text-warning fs-3"><i class="bi bi-receipt"></i></div>
+                            <div>
+                                <h5 class="mb-1">Itemized Transparent Invoicing</h5>
+                                <p class="text-muted small">Clear, itemized invoices detailing labor charges, genuine replacement parts, and warranty coverage.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="trust-metrics-card text-white">
+                        <h4 class="brand-font text-info mb-4">Service Excellence Record</h4>
+                        <div class="row g-4 text-center">
+                            <div class="col-6">
+                                <div class="metric-number text-white brand-font">100%</div>
+                                <p class="text-white-50 small mb-0">Quality Tested</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-number text-info brand-font">7+</div>
+                                <p class="text-white-50 small mb-0">Core Services</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-number text-warning brand-font">1000s</div>
+                                <p class="text-white-50 small mb-0">Devices Serviced</p>
+                            </div>
+                            <div class="col-6">
+                                <div class="metric-number text-success brand-font">15+</div>
+                                <p class="text-white-50 small mb-0">Years Tech Trust</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Map Section -->
+    <section id="contact" class="py-5 bg-light">
+        <div class="container py-4">
+            <div class="text-center mb-5">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill text-uppercase fw-bold mb-2">Visit & Contact</span>
+                <h2 class="display-6 brand-font fw-bold">Get In Touch With ROBO DIGITAL</h2>
+                <p class="text-muted">Conveniently located in Musiri, Trichy with direct phone and WhatsApp support.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100 bg-white">
+                        <h4 class="brand-font mb-4">Store Information</h4>
+
+                        <div class="d-flex align-items-start gap-3 mb-4">
+                            <div class="bg-primary-subtle text-primary p-3 rounded-3 fs-4"><i class="bi bi-geo-alt-fill"></i></div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Shop Address</h6>
+                                <p class="text-muted small mb-0">
+                                    54A, Govt Boys School Opposite,<br>
+                                    Trichy Main Road, Musiri,<br>
+                                    Tamil Nadu - 621211, India
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 mb-4">
+                            <div class="bg-success-subtle text-success p-3 rounded-3 fs-4"><i class="bi bi-telephone-fill"></i></div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Phone & WhatsApp</h6>
+                                <p class="text-muted small mb-0">
+                                    <a href="tel:+918122227042" class="text-decoration-none text-dark fw-bold">8122227042</a> / 
+                                    <a href="tel:+918122227074" class="text-decoration-none text-dark fw-bold">8122227074</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-start gap-3 mb-4">
+                            <div class="bg-info-subtle text-info p-3 rounded-3 fs-4"><i class="bi bi-envelope-fill"></i></div>
+                            <div>
+                                <h6 class="mb-1 fw-bold">Email Address</h6>
+                                <p class="text-muted small mb-0">
+                                    <a href="mailto:robomusiri@gmail.com" class="text-decoration-none text-muted">robomusiri@gmail.com</a>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto pt-3 border-top">
+                            <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital%20Computers,%20I%20have%20an%20inquiry" target="_blank" class="btn btn-success w-100 rounded-pill py-2">
+                                <i class="bi bi-whatsapp me-2"></i> Message Us on WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Google Maps Embed -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100" style="min-height: 380px;">
+                        <iframe
+                            src="https://www.google.com/maps?q=54A%20Govt%20Boys%20School%20Opposite%20Trichy%20Road%20Musiri%20Tamil%20Nadu%20621211%20India&output=embed"
+                            width="100%"
+                            height="100%"
+                            style="border:0; min-height: 400px;"
+                            allowfullscreen=""
+                            loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-4 border-top border-secondary">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="brand-badge-icon" style="width: 36px; height: 36px; font-size: 18px;">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <h5 class="mb-0 text-white brand-font">ROBO DIGITAL COMPUTERS</h5>
+                    </div>
+                    <p class="text-white-50 small" style="max-width: 420px;">
+                        Musiri's premier technology center for computer hardware sales, laptop motherboard repair, CCTV security, printer solutions, and digital document services.
+                    </p>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled text-white-50 small">
+                        <li class="mb-2"><a href="#home" class="text-white-50 text-decoration-none">Home</a></li>
+                        <li class="mb-2"><a href="#services" class="text-white-50 text-decoration-none">Services</a></li>
+                        <li class="mb-2"><a href="{% url 'track' %}" class="text-info text-decoration-none fw-semibold">Track Live Service</a></li>
+                        <li class="mb-2"><a href="{% url 'login' %}" class="text-white-50 text-decoration-none">Service Staff Login</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-6 col-lg-4">
+                    <h6 class="text-white fw-bold mb-3">Contact Helpline</h6>
+                    <p class="text-white-50 small mb-1"><i class="bi bi-telephone text-info me-2"></i> 8122227042, 8122227074</p>
+                    <p class="text-white-50 small mb-1"><i class="bi bi-envelope text-info me-2"></i> robomusiri@gmail.com</p>
+                    <p class="text-white-50 small"><i class="bi bi-geo-alt text-info me-2"></i> Musiri, Trichy - 621211</p>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center pt-4 border-top border-secondary text-white-50 small">
+                <div>© 2026 ROBO DIGITAL COMPUTERS. All rights reserved.</div>
+                <div>Service Center Management System</div>
+            </div>
         </div>
     </footer>
 
-    <a href="https://wa.me/918122227042" class="whatsapp-float" target="_blank" rel="noreferrer" aria-label="Chat on WhatsApp">WhatsApp</a>
-    <script>
-        const navigationToggle = document.querySelector('.nav-toggle');
-        const navigation = document.querySelector('.main-nav');
-        const enquiryForm = document.querySelector('#whatsapp-form');
+    <!-- Floating WhatsApp Action -->
+    <a href="https://wa.me/918122227042" class="floating-wa-btn" target="_blank" title="Chat on WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
 
-        navigationToggle.addEventListener('click', () => {
-            const isOpen = navigationToggle.getAttribute('aria-expanded') === 'true';
-            navigationToggle.setAttribute('aria-expanded', String(!isOpen));
-            navigation.classList.toggle('is-open', !isOpen);
-        });
-
-        navigation.querySelectorAll('a').forEach((link) => {
-            link.addEventListener('click', () => {
-                navigationToggle.setAttribute('aria-expanded', 'false');
-                navigation.classList.remove('is-open');
-            });
-        });
-
-        enquiryForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const formData = new FormData(enquiryForm);
-            const message = [
-                'Hello Robo Digital Computers,',
-                '',
-                `Name: ${formData.get('name')}`,
-                `Phone: ${formData.get('phone')}`,
-                `Email: ${formData.get('email') || 'Not provided'}`,
-                `Requirement: ${formData.get('message')}`
-            ].join('\n');
-            window.open(`https://wa.me/918122227042?text=${encodeURIComponent(message)}`, '_blank', 'noopener');
-        });
-    </script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

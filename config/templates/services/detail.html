@@ -1,1 +1,536 @@
-<!doctype html><html><head><title>{{ service }}</title></head><body><h1>{{ service }}</h1><p><strong>Customer:</strong> <a href="{% url 'customer_detail' service.customer.pk %}">{{ service.customer.name }}</a> ({{ service.customer.phone_number }})</p><p>{{ service.device_type }} | {{ service.brand }} {{ service.model }}</p><p>Complaint: {{ service.complaint }}</p><p>Price: {{ service.price }} | Status: {{ service.status }}</p><form method="post" action="{% url 'service_status' service.pk %}">{% csrf_token %}{{ status_form.as_p }}<button>Update status</button></form><h2>Work progress</h2>{% for item in progress %}<p>{{ item.created_at }}: {{ item.progress_description }} ({{ item.created_by.name|default:"-" }})</p>{% empty %}<p>No progress recorded.</p>{% endfor %}<form method="post" action="{% url 'service_progress' service.pk %}">{% csrf_token %}{{ progress_form.as_p }}<button>Add progress</button></form><h2>Expenses</h2>{% for expense in expenses %}<p>{{ expense.description }}: {{ expense.amount }}</p>{% empty %}<p>No expenses recorded.</p>{% endfor %}<form method="post" action="{% url 'expense_create' service.pk %}">{% csrf_token %}{{ expense_form.as_p }}<button>Record expense</button></form><h2>Payments</h2>{% for payment in payments %}<p>{{ payment.amount }} via {{ payment.payment_method }}</p>{% empty %}<p>No payments recorded.</p>{% endfor %}<form method="post" action="{% url 'payment_create' service.pk %}">{% csrf_token %}{{ payment_form.as_p }}<button>Record payment</button></form><h2>Status history</h2>{% for item in history %}<p>{{ item.changed_at }}: {{ item.old_status }} to {{ item.new_status }} by {{ item.changed_by.name|default:"-" }}</p>{% empty %}<p>No status changes recorded.</p>{% endfor %}<p><a href="{% url 'service_list' %}">Back to services</a></p></body></html>
+{% extends "base.html" %}
+
+{% block title %}{{ service.service_id }} - Service Console{% endblock %}
+{% block breadcrumb %}<a href="{% url 'service_list' %}" class="text-decoration-none">Services</a> / {{ service.service_id }}{% endblock %}
+
+{% block content %}
+<!-- Top Header & Action Bar -->
+<div class="card card-luxury p-4 mb-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-3">
+                <h2 class="brand-font mb-0 text-primary">{{ service.service_id }}</h2>
+                <span class="badge-status status-{{ service.status|lower|cut:' ' }} fs-6">
+                    {{ service.status }}
+                </span>
+                <span class="badge {% if service.priority == 'Urgent' %}bg-danger{% elif service.priority == 'High' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ service.priority }} Priority
+                </span>
+            </div>
+            <div class="text-muted small mt-1">
+                Inward on <strong>{{ service.created_at|date:"d-M-Y h:i A" }}</strong> by <strong>{{ service.created_by.name|default:"Staff" }}</strong>
+                {% if service.updated_by %} • Last updated by {{ service.updated_by.name }} ({{ service.updated_at|timesince }} ago){% endif %}
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'service_edit' service.pk %}" class="btn btn-outline-secondary">
+                <i class="bi bi-pencil me-1"></i> Edit Details
+            </a>
+
+            {% if service.status in 'Completed,Delivered' %}
+                <a href="{% url 'invoice_view' service.pk %}" class="btn btn-success shadow-sm">
+                    <i class="bi bi-receipt me-1"></i> Print / View Invoice
+                </a>
+            {% endif %}
+
+            <a href="{{ whatsapp_inward_url }}" target="_blank" class="btn btn-outline-success" title="Open Inward Message in WhatsApp Web">
+                <i class="bi bi-whatsapp me-1"></i> WhatsApp Inward
+            </a>
+
+            {% if service.status in 'Completed,Delivered' %}
+                <a href="{{ whatsapp_completion_url }}" target="_blank" class="btn btn-success" title="Send Completion WhatsApp Alert">
+                    <i class="bi bi-whatsapp me-1"></i> WhatsApp Completion
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Interactive Status Workflow Stepper -->
+    <div class="status-stepper mt-4">
+        <div class="step-node {% if service.status in 'Pending,In Progress,Completed,Delivered' %}completed{% endif %} {% if service.status == 'Pending' %}active{% endif %}">
+            <div class="step-circle"><i class="bi bi-box-arrow-in-down"></i></div>
+            <span class="step-title">1. Received / Pending</span>
+        </div>
+
+        <div class="step-node {% if service.status in 'In Progress,Completed,Delivered' %}completed{% endif %} {% if service.status == 'In Progress' %}active{% endif %}">
+            <div class="step-circle"><i class="bi bi-tools"></i></div>
+            <span class="step-title">2. In Progress / Diagnosis</span>
+        </div>
+
+        <div class="step-node {% if service.status in 'Completed,Delivered' %}completed{% endif %} {% if service.status == 'Completed' %}active{% endif %}">
+            <div class="step-circle"><i class="bi bi-check2-circle"></i></div>
+            <span class="step-title">3. Completed / Ready</span>
+        </div>
+
+        <div class="step-node {% if service.status == 'Delivered' %}completed active{% endif %}">
+            <div class="step-circle"><i class="bi bi-box-seam"></i></div>
+            <span class="step-title">4. Delivered to Customer</span>
+        </div>
+    </div>
+
+    <!-- Quick Status Transition Form -->
+    <div class="bg-light p-3 rounded-3 border d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <form method="post" action="{% url 'service_status' service.pk %}" class="d-flex flex-wrap align-items-center gap-2 w-100">
+            {% csrf_token %}
+            <span class="fw-semibold small text-muted"><i class="bi bi-arrow-repeat me-1"></i>Update Status:</span>
+            <div style="min-width: 180px;">
+                {{ status_form.status }}
+            </div>
+            <div class="flex-grow-1">
+                {{ status_form.remarks }}
+            </div>
+            <div class="form-check form-switch me-2">
+                <input class="form-check-input" type="checkbox" name="send_whatsapp" id="statusWhatsAppToggle" value="1" checked>
+                <label class="form-check-label small text-muted" for="statusWhatsAppToggle">WhatsApp Alert</label>
+            </div>
+            <button type="submit" class="btn btn-primary btn-sm px-3">
+                Update Status & Ledger
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- 2-Column Main Info: Customer & Device -->
+<div class="row g-4 mb-4">
+    <!-- Customer Card -->
+    <div class="col-lg-6">
+        <div class="card card-luxury h-100 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="brand-font mb-0"><i class="bi bi-person-fill text-primary me-2"></i>Customer Information</h5>
+                <a href="{% url 'customer_detail' customer.pk %}" class="btn btn-sm btn-link text-decoration-none">Full Profile &rarr;</a>
+            </div>
+
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="user-avatar-circle" style="width: 48px; height: 48px; font-size: 20px;">
+                    {{ customer.name|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h5 class="mb-0 fw-bold">{{ customer.name }}</h5>
+                    <span class="badge bg-secondary font-monospace small">{{ customer.customer_id }}</span>
+                </div>
+            </div>
+
+            <div class="row g-2 small text-secondary">
+                <div class="col-6">
+                    <strong>Primary Phone:</strong><br>
+                    <a href="tel:{{ customer.phone_number }}" class="text-dark fw-bold">{{ customer.phone_number }}</a>
+                    <a href="https://wa.me/91{{ customer.phone_number }}" target="_blank" class="text-success ms-1"><i class="bi bi-whatsapp"></i></a>
+                </div>
+                <div class="col-6">
+                    <strong>Alternate Phone:</strong><br>
+                    {{ customer.alternate_phone|default:"-" }}
+                </div>
+                <div class="col-12 mt-2">
+                    <strong>Address / Location:</strong><br>
+                    {{ customer.address|default:"Musiri / Trichy" }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device & Accessories Card -->
+    <div class="col-lg-6">
+        <div class="card card-luxury h-100 p-4">
+            <h5 class="brand-font mb-3"><i class="bi bi-laptop-fill text-info me-2"></i>Device & Accessories</h5>
+
+            <div class="row g-2 mb-3">
+                <div class="col-6">
+                    <small class="text-muted d-block">Device Category</small>
+                    <span class="fw-bold fs-6">{{ service.device_type }}</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">Brand & Model</small>
+                    <span class="fw-bold fs-6">{{ service.brand }} {{ service.model }}</span>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">Serial Number</small>
+                    <code>{{ service.serial_number|default:"Not provided" }}</code>
+                </div>
+                <div class="col-6">
+                    <small class="text-muted d-block">Asset / Tag ID</small>
+                    <span>{{ service.asset_number|default:"-" }}</span>
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <small class="text-muted d-block">Physical Condition</small>
+                <span class="small">{{ service.physical_condition|default:"Normal / No specific damage noted" }}</span>
+            </div>
+
+            <div>
+                <small class="text-muted d-block mb-1">Accessories Received:</small>
+                {% if service.accessories %}
+                    <span class="badge bg-primary-subtle text-primary p-2">{{ service.accessories }}</span>
+                {% else %}
+                    <span class="text-muted small">None</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 2-Column: Complaint & Financial Summary -->
+<div class="row g-4 mb-4">
+    <!-- Complaint & Diagnosis -->
+    <div class="col-lg-7">
+        <div class="card card-luxury p-4 h-100">
+            <h5 class="brand-font mb-3"><i class="bi bi-chat-left-dots-fill text-warning me-2"></i>Complaint & Diagnosis</h5>
+
+            <div class="mb-3 p-3 bg-light rounded-3">
+                <strong class="text-danger small text-uppercase d-block mb-1"><i class="bi bi-exclamation-octagon me-1"></i>Customer Complaint:</strong>
+                <p class="mb-0">{{ service.complaint }}</p>
+            </div>
+
+            <div class="mb-3">
+                <strong class="text-primary small text-uppercase d-block mb-1"><i class="bi bi-search me-1"></i>Initial Technical Diagnosis:</strong>
+                <p class="text-muted small mb-0">{{ service.initial_diagnosis|default:"Under diagnostic inspection." }}</p>
+            </div>
+
+            <div>
+                <strong class="text-secondary small text-uppercase d-block mb-1"><i class="bi bi-sticky me-1"></i>Technician Internal Notes:</strong>
+                <p class="text-muted small mb-0">{{ service.technician_notes|default:"No internal notes." }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Financial Breakdown Card -->
+    <div class="col-lg-5">
+        <div class="card card-luxury p-4 h-100">
+            <h5 class="brand-font mb-3"><i class="bi bi-currency-rupee text-success me-2"></i>Financial & Billing Summary</h5>
+
+            <div class="d-flex justify-content-between py-1 border-bottom small">
+                <span>Labor / Service Charge:</span>
+                <strong>₹{{ service.service_charge|floatformat:2 }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-1 border-bottom small">
+                <span>Parts & Spares Expenses ({{ expenses.count }} items):</span>
+                <strong>₹{{ service.total_expenses|floatformat:2 }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-1 border-bottom small">
+                <span>Subtotal Amount:</span>
+                <strong>₹{{ service.subtotal_amount|floatformat:2 }}</strong>
+            </div>
+
+            <div class="d-flex justify-content-between py-1 border-bottom small text-muted">
+                <span>Discount Allowed:</span>
+                <span>- ₹{{ service.discount|floatformat:2 }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between py-2 border-bottom fw-bold fs-5 text-primary">
+                <span>Grand Total:</span>
+                <span>₹{{ service.total_amount|floatformat:2 }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between py-1 border-bottom small text-success">
+                <span>Total Paid ({{ payments.count }} receipts):</span>
+                <span class="fw-bold">₹{{ service.total_paid|floatformat:2 }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between py-2 fw-bold fs-5 {% if service.balance_amount > 0 %}text-danger{% else %}text-success{% endif %}">
+                <span>Balance Due:</span>
+                <span>₹{{ service.balance_amount|floatformat:2 }}</span>
+            </div>
+
+            <div class="mt-2 text-center">
+                <span class="badge {% if service.payment_status == 'Paid' %}bg-success{% elif service.payment_status == 'Partially Paid' %}bg-warning text-dark{% else %}bg-danger{% endif %} px-3 py-2 rounded-pill">
+                    Payment Status: {{ service.payment_status }}
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabs for Operations: Work Progress, Expenses, Payments, Ledger, Notifications -->
+<div class="card card-luxury">
+    <div class="card-header bg-white border-bottom">
+        <ul class="nav nav-tabs card-header-tabs" id="serviceConsoleTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="progress-tab" data-bs-toggle="tab" data-bs-target="#progress-pane" type="button" role="tab">
+                    <i class="bi bi-tools me-1"></i> Work Progress ({{ progress_updates.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses-pane" type="button" role="tab">
+                    <i class="bi bi-cart-check me-1"></i> Parts & Expenses ({{ expenses.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments-pane" type="button" role="tab">
+                    <i class="bi bi-cash-stack me-1"></i> Payments Received ({{ payments.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="ledger-tab" data-bs-toggle="tab" data-bs-target="#ledger-pane" type="button" role="tab">
+                    <i class="bi bi-journal-text me-1"></i> Service Ledger ({{ ledger_entries.count }})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="notif-tab" data-bs-toggle="tab" data-bs-target="#notif-pane" type="button" role="tab">
+                    <i class="bi bi-whatsapp me-1"></i> WhatsApp Log ({{ notifications.count }})
+                </button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="card-body p-4 tab-content" id="serviceConsoleTabsContent">
+        <!-- 1. WORK PROGRESS TAB -->
+        <div class="tab-pane fade show active" id="progress-pane" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <h6 class="brand-font mb-3">Technical Progress Updates</h6>
+                    <div class="timeline-feed">
+                        {% for p in progress_updates %}
+                        <div class="timeline-item">
+                            <div class="timeline-dot"></div>
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <strong class="text-primary small">{{ p.created_by.name|default:"Technician" }}</strong>
+                                    <small class="text-muted">{{ p.created_at|date:"d-M-Y h:i A" }}</small>
+                                </div>
+                                <p class="mb-0 small">{{ p.progress_description }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted small">No progress notes recorded yet.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <h6 class="brand-font mb-2"><i class="bi bi-plus-circle me-1"></i> Add Work Progress Update</h6>
+                        <form method="post" action="{% url 'service_progress' service.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ progress_form.progress_description }}
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-sm w-100">
+                                <i class="bi bi-save me-1"></i> Post Progress Update
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. EXPENSES / SPARE PARTS TAB -->
+        <div class="tab-pane fade" id="expenses-pane" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <h6 class="brand-font mb-3">Service Parts & Spares Breakdown</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                    <th>Amount (₹)</th>
+                                    <th>Added By</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for e in expenses %}
+                                <tr>
+                                    <td><span class="badge bg-secondary-subtle text-secondary">{{ e.expense_type }}</span></td>
+                                    <td class="fw-semibold">{{ e.description }}</td>
+                                    <td class="fw-bold text-primary">₹{{ e.amount|floatformat:2 }}</td>
+                                    <td class="small text-muted">{{ e.created_by.name|default:"-" }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'expense_delete' e.pk %}" class="btn btn-sm btn-outline-danger py-0 px-2" title="Delete Expense" onclick="return confirm('Remove this expense entry?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted small">No parts or expenses recorded.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <h6 class="brand-font mb-2"><i class="bi bi-cart-plus me-1"></i> Add Part / Expense</h6>
+                        <form method="post" action="{% url 'expense_create' service.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Expense Category</label>
+                                {{ expense_form.expense_type }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Item Description / Part Name</label>
+                                {{ expense_form.description }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Amount (₹)</label>
+                                {{ expense_form.amount }}
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-sm w-100 fw-bold">
+                                <i class="bi bi-plus-lg me-1"></i> Record Part / Expense
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PAYMENTS TAB -->
+        <div class="tab-pane fade" id="payments-pane" role="tabpanel">
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    <h6 class="brand-font mb-3">Payments & Settlements Received</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Method</th>
+                                    <th>Reference</th>
+                                    <th>Amount</th>
+                                    <th>Received By</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in payments %}
+                                <tr>
+                                    <td class="small">{{ p.payment_date|date:"d-M-Y" }}</td>
+                                    <td><span class="badge bg-success-subtle text-success">{{ p.payment_method }}</span></td>
+                                    <td class="small font-monospace">{{ p.reference_number|default:"-" }}</td>
+                                    <td class="fw-bold text-success">₹{{ p.amount|floatformat:2 }}</td>
+                                    <td class="small text-muted">{{ p.received_by.name|default:"-" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-3 text-muted small">No payment transactions recorded yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <h6 class="brand-font mb-2 text-success"><i class="bi bi-cash-coin me-1"></i> Record Payment</h6>
+                        <form method="post" action="{% url 'payment_create' service.pk %}">
+                            {% csrf_token %}
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Payment Amount (₹)</label>
+                                {{ payment_form.amount }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Payment Method</label>
+                                {{ payment_form.payment_method }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Transaction Reference / UPI ID (Optional)</label>
+                                {{ payment_form.reference_number }}
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Notes</label>
+                                {{ payment_form.notes }}
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" name="send_whatsapp" id="payWhatsApp" value="1" checked>
+                                <label class="form-check-label small" for="payWhatsApp">Send WhatsApp Payment Receipt</label>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-sm w-100 fw-bold">
+                                <i class="bi bi-check-circle me-1"></i> Save Payment Receipt
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. SERVICE LEDGER TAB -->
+        <div class="tab-pane fade" id="ledger-pane" role="tabpanel">
+            <h6 class="brand-font mb-3">Service Audit Ledger Timeline</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Action Type</th>
+                            <th>Description</th>
+                            <th>Amount (₹)</th>
+                            <th>Staff Member</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in ledger_entries %}
+                        <tr>
+                            <td class="small text-muted">{{ item.created_at|date:"d-M-Y h:i A" }}</td>
+                            <td>
+                                <span class="badge bg-secondary-subtle text-dark">{{ item.action }}</span>
+                            </td>
+                            <td class="small">{{ item.description }}</td>
+                            <td class="small fw-semibold">
+                                {% if item.amount %}₹{{ item.amount|floatformat:2 }}{% else %}-{% endif %}
+                            </td>
+                            <td class="small text-muted">{{ item.created_by.name|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center py-3 text-muted small">No ledger entries recorded.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. WHATSAPP LOGS TAB -->
+        <div class="tab-pane fade" id="notif-pane" role="tabpanel">
+            <h6 class="brand-font mb-3">WhatsApp Notification Activity History</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Sent At</th>
+                            <th>Type</th>
+                            <th>Recipient</th>
+                            <th>Message Content</th>
+                            <th>Delivery Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for n in notifications %}
+                        <tr>
+                            <td class="small text-muted">{{ n.sent_at|date:"d-M-Y h:i A" }}</td>
+                            <td><span class="badge bg-info-subtle text-info">{{ n.notification_type }}</span></td>
+                            <td class="small font-monospace">{{ n.phone_number }}</td>
+                            <td class="small text-muted" style="max-width: 300px;">
+                                <div class="text-truncate">{{ n.message }}</div>
+                            </td>
+                            <td>
+                                <span class="badge {% if n.status == 'Sent' %}bg-success{% elif n.status == 'Simulated' %}bg-info text-dark{% else %}bg-danger{% endif %}">
+                                    {{ n.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'notification_resend' n.pk %}" class="btn btn-sm btn-outline-primary py-0 px-2">
+                                    <i class="bi bi-arrow-repeat"></i> Resend
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-3 text-muted small">No WhatsApp notifications logged yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

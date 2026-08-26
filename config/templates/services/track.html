@@ -1,0 +1,266 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Your Service - ROBO DIGITAL COMPUTERS</title>
+    
+    <!-- Bootstrap 5 CSS & Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        :root {
+            --brand-primary: #0284c7;
+            --brand-primary-dark: #0369a1;
+            --brand-accent: #38bdf8;
+            --brand-dark: #0f172a;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4, h5, h6, .brand-font {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+        }
+
+        .track-hero {
+            background: radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.28) 0%, rgba(15, 23, 42, 1) 70%);
+            color: #ffffff;
+            padding: 60px 0 50px;
+            position: relative;
+        }
+
+        .search-container-box {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(16px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+        }
+
+        .track-result-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="bg-dark text-white py-3 border-bottom border-secondary sticky-top" style="background: rgba(15, 23, 42, 0.95) !important; backdrop-filter: blur(12px);">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{% url 'home' %}" class="d-flex align-items-center gap-2 text-white text-decoration-none">
+                <div class="sidebar-brand-icon" style="width: 40px; height: 40px; font-size: 20px; border-radius: 10px; background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);">
+                    <i class="bi bi-cpu-fill"></i>
+                </div>
+                <div>
+                    <h5 class="mb-0 brand-font">ROBO DIGITAL COMPUTERS</h5>
+                    <small class="text-info" style="font-size: 11px;">Service Status Tracker</small>
+                </div>
+            </a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{% url 'home' %}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                    <i class="bi bi-house-door me-1"></i> Home
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                    <i class="bi bi-shield-lock me-1"></i> Staff Login
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Hero -->
+    <section class="track-hero">
+        <div class="container text-center">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary bg-opacity-25 border border-primary border-opacity-50 text-info small mb-3">
+                <i class="bi bi-patch-check-fill"></i> Live Repair Status Lookup
+            </div>
+            <h2 class="brand-font mb-2 text-white display-6 fw-bold">Live Device Repair & Service Status</h2>
+            <p class="text-white-50 mx-auto mb-4" style="max-width: 580px;">
+                Enter your Service ID (e.g. <code>SRV-2026-00001</code>) or your 10-digit registered mobile number to check the real-time status of your device.
+            </p>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="search-container-box text-start">
+                        <form method="get" action="{% url 'track' %}">
+                            <div class="input-group input-group-lg">
+                                <input type="text" name="q" value="{{ query }}" class="form-control border-0" placeholder="e.g. SRV-2026-00001 or 9876543210" required autofocus>
+                                <button class="btn btn-primary fw-bold px-4" type="submit">
+                                    <i class="bi bi-search me-1"></i> Track
+                                </button>
+                            </div>
+                        </form>
+                        <div class="d-flex justify-content-between align-items-center text-white-50 small mt-3">
+                            <span><i class="bi bi-shield-check text-success me-1"></i> Instant live database lookup</span>
+                            <a href="tel:+918122227042" class="text-info text-decoration-none">Help: 8122227042</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <main class="container py-5 flex-grow-1">
+        {% if error_msg %}
+            <div class="alert alert-warning text-center p-4 rounded-4 shadow-sm mx-auto" style="max-width: 600px;">
+                <i class="bi bi-search fs-1 text-warning d-block mb-2"></i>
+                <h5 class="fw-bold">No Active Record Found</h5>
+                <p class="mb-3 text-muted">{{ error_msg }}</p>
+                <div class="small text-muted">
+                    Need help? Call our service desk at <a href="tel:+918122227042" class="fw-bold text-dark">8122227042</a> or <a href="tel:+918122227074" class="fw-bold text-dark">8122227074</a>.
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Single Exact Service Match -->
+        {% if service %}
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <div class="track-result-card p-4 p-md-5 mb-4">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4 pb-3 border-bottom">
+                            <div>
+                                <span class="badge bg-primary-subtle text-primary font-monospace px-3 py-2 fs-6 mb-2">{{ service.service_id }}</span>
+                                <h3 class="brand-font mb-1">{{ service.device_type }} - {{ service.brand }} {{ service.model }}</h3>
+                                <div class="text-muted small">
+                                    Customer: <strong>{{ service.customer.name }}</strong> • Inward Received on {{ service.created_at|date:"d-M-Y" }}
+                                </div>
+                            </div>
+
+                            <div>
+                                <span class="badge-status status-{{ service.status|lower|cut:' ' }} fs-6 px-3 py-2">
+                                    {{ service.status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Status Stepper Timeline -->
+                        <div class="status-stepper mb-5">
+                            <div class="step-node {% if service.status in 'Pending,In Progress,Completed,Delivered' %}completed{% endif %} {% if service.status == 'Pending' %}active{% endif %}">
+                                <div class="step-circle"><i class="bi bi-box-arrow-in-down"></i></div>
+                                <span class="step-title">1. Received</span>
+                            </div>
+
+                            <div class="step-node {% if service.status in 'In Progress,Completed,Delivered' %}completed{% endif %} {% if service.status == 'In Progress' %}active{% endif %}">
+                                <div class="step-circle"><i class="bi bi-tools"></i></div>
+                                <span class="step-title">2. Under Diagnosis</span>
+                            </div>
+
+                            <div class="step-node {% if service.status in 'Completed,Delivered' %}completed{% endif %} {% if service.status == 'Completed' %}active{% endif %}">
+                                <div class="step-circle"><i class="bi bi-check2-circle"></i></div>
+                                <span class="step-title">3. Ready for Delivery</span>
+                            </div>
+
+                            <div class="step-node {% if service.status == 'Delivered' %}completed active{% endif %}">
+                                <div class="step-circle"><i class="bi bi-box-seam"></i></div>
+                                <span class="step-title">4. Delivered</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 h-100 border">
+                                    <h6 class="fw-bold text-muted small text-uppercase mb-2">Complaint / Reported Issue</h6>
+                                    <p class="mb-0 text-dark">{{ service.complaint }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded-3 h-100 border">
+                                    <h6 class="fw-bold text-muted small text-uppercase mb-2">Expected Completion Date</h6>
+                                    <p class="mb-0 fw-bold text-primary fs-5">
+                                        {{ service.expected_completion_date|date:"d-F-Y"|default:"Under Technical Diagnosis" }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if service.status in 'Completed,Delivered' %}
+                            <div class="alert alert-success d-flex align-items-center justify-content-between p-3 rounded-3 mb-4">
+                                <div class="d-flex align-items-center gap-3">
+                                    <i class="bi bi-check-circle-fill fs-2 text-success"></i>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold">Your device is ready for collection!</h6>
+                                        <small>Please visit ROBO DIGITAL COMPUTERS with your Service ID to collect your device.</small>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="d-block small text-muted">Amount Due</span>
+                                    <strong class="fs-4 text-dark">₹{{ service.balance_amount|floatformat:2 }}</strong>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- Shop info & Help -->
+                        <div class="p-3 rounded-3 border bg-light d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="small text-muted">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i> ROBO DIGITAL COMPUTERS, 54A Govt Boys School Opposite, Trichy Road, Musiri.
+                            </div>
+                            <a href="https://wa.me/918122227042?text=Hello%20ROBO%20Digital,%20regarding%20Service%20ID%20{{ service.service_id }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3">
+                                <i class="bi bi-whatsapp me-1"></i> WhatsApp Service Desk
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Multiple Services Match (by Phone Number) -->
+        {% if results_list %}
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <h4 class="brand-font mb-3">Service Orders for Phone: {{ query }} ({{ results_list.count }})</h4>
+                    <div class="row g-3">
+                        {% for s in results_list %}
+                        <div class="col-12">
+                            <div class="card card-luxury p-3 d-flex flex-row justify-content-between align-items-center flex-wrap gap-3">
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-primary font-monospace">{{ s.service_id }}</strong>
+                                        <span class="badge-status status-{{ s.status|lower|cut:' ' }}">
+                                            {{ s.status }}
+                                        </span>
+                                    </div>
+                                    <div class="fw-bold mt-1">{{ s.device_type }} - {{ s.brand }} {{ s.model }}</div>
+                                    <div class="text-muted small">Complaint: {{ s.complaint|truncatechars:60 }}</div>
+                                </div>
+                                <a href="{% url 'track' %}?q={{ s.service_id }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                    View Full Status &rarr;
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-muted small border-top bg-white mt-auto">
+        <div class="container">
+            © 2026 ROBO DIGITAL COMPUTERS. Musiri, Trichy. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

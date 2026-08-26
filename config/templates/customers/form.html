@@ -1,1 +1,102 @@
-<!doctype html><html><head><title>New Customer</title></head><body><h1>New customer</h1><form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Create customer</button></form><a href="{% url 'customer_list' %}">Cancel</a></body></html>
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'customer_list' %}" class="text-decoration-none">Customers</a> / {{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card card-luxury p-4">
+            <h4 class="brand-font mb-1">{{ title }}</h4>
+            <p class="text-muted small mb-3">Internal customer registry for service management at ROBO DIGITAL COMPUTERS.</p>
+
+            {% if existing_customer %}
+                <div class="alert alert-warning p-3 rounded-3 mb-4">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="bi bi-exclamation-circle-fill fs-4 text-warning"></i>
+                        <div>
+                            <h6 class="mb-1 fw-bold">Existing Customer Found with Phone {{ form.phone_number.value }}</h6>
+                            <p class="small mb-2">
+                                <strong>{{ existing_customer.name }}</strong> (ID: <code>{{ existing_customer.customer_id }}</code>)<br>
+                                Address: {{ existing_customer.address|default:"Musiri / Trichy" }}<br>
+                                Total Services: {{ existing_customer.total_services }}
+                            </p>
+                            <div class="d-flex gap-2">
+                                <a href="{% url 'service_create' %}?selected_customer={{ existing_customer.pk }}" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-check2-circle"></i> Use Existing Customer for Inward
+                                </a>
+                                <a href="{% url 'customer_detail' existing_customer.pk %}" class="btn btn-sm btn-outline-secondary">
+                                    View Existing Profile
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if form.errors %}
+                <div class="alert alert-danger py-2 small">
+                    Please correct the errors indicated below.
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                {% if existing_customer %}
+                    <input type="hidden" name="confirm_duplicate" value="1">
+                {% endif %}
+
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold small">
+                        Customer Full Name <span class="text-danger">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% for err in form.name.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-semibold small">
+                            Primary Mobile Number <span class="text-danger">*</span>
+                        </label>
+                        {{ form.phone_number }}
+                        <small class="text-muted" style="font-size: 11px;">10-digit mobile number for WhatsApp alerts</small>
+                        {% for err in form.phone_number.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="{{ form.alternate_phone.id_for_label }}" class="form-label fw-semibold small">
+                            Alternate Phone (Optional)
+                        </label>
+                        {{ form.alternate_phone }}
+                        {% for err in form.alternate_phone.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold small">
+                        Email Address (Optional)
+                    </label>
+                    {{ form.email }}
+                    {% for err in form.email.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.address.id_for_label }}" class="form-label fw-semibold small">
+                        Address / Town in Musiri / Trichy
+                    </label>
+                    {{ form.address }}
+                    {% for err in form.address.errors %}<div class="text-danger small mt-1">{{ err }}</div>{% endfor %}
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'customer_list' %}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-check-lg me-1"></i> Save Customer Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

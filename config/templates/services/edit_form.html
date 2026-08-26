@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ service.service_id }}{% endblock %}
+{% block breadcrumb %}<a href="{% url 'service_list' %}" class="text-decoration-none">Services</a> / <a href="{% url 'service_detail' service.pk %}" class="text-decoration-none">{{ service.service_id }}</a> / Edit{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card card-luxury p-4">
+            <h4 class="brand-font mb-1">Edit Service: {{ service.service_id }}</h4>
+            <p class="text-muted small mb-3">Update device specifications, complaint, or billing estimates for <strong>{{ service.customer.name }}</strong>.</p>
+
+            {% if form.errors %}
+                <div class="alert alert-danger py-2 small">
+                    Please correct the errors in the form.
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Device Type</label>
+                        {{ form.device_type }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Brand</label>
+                        {{ form.brand }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-semibold">Model</label>
+                        {{ form.model }}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Serial Number</label>
+                        {{ form.serial_number }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Asset Number</label>
+                        {{ form.asset_number }}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Physical Condition</label>
+                    {{ form.physical_condition }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Accessories Received</label>
+                    {{ form.accessories }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Customer Complaint</label>
+                    {{ form.complaint }}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Initial Diagnosis</label>
+                        {{ form.initial_diagnosis }}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold">Technician Notes</label>
+                        {{ form.technician_notes }}
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Priority</label>
+                        {{ form.priority }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Expected Date</label>
+                        {{ form.expected_completion_date }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Service Charge (₹)</label>
+                        {{ form.service_charge }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-semibold">Discount (₹)</label>
+                        {{ form.discount }}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'service_detail' service.pk %}" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save me-1"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

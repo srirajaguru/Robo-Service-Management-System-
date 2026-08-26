@@ -1,1 +1,188 @@
-<!doctype html><html><head><title>Services</title></head><body><h1>Service records</h1><nav><a href="{% url 'staff_dashboard' %}">Dashboard</a> | <a href="{% url 'service_create' %}">New service inward</a> | <a href="{% url 'customer_list' %}">Customers</a></nav><form><input name="q" value="{{ query }}" placeholder="Customer, brand or model"><select name="status"><option value="">All statuses</option><option {% if status == 'Pending' %}selected{% endif %}>Pending</option><option {% if status == 'In Progress' %}selected{% endif %}>In Progress</option><option {% if status == 'Completed' %}selected{% endif %}>Completed</option></select><button>Search</button></form>{% include "services/table.html" %}</body></html>
+{% extends "base.html" %}
+
+{% block title %}All Services{% endblock %}
+{% block breadcrumb %}Services List{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+    <div>
+        <h2 class="brand-font mb-1">Service Operations Board</h2>
+        <p class="text-muted mb-0">Total {{ all_count }} services registered in ROBO DIGITAL COMPUTERS.</p>
+    </div>
+    <a href="{% url 'service_create' %}" class="btn btn-primary shadow-sm">
+        <i class="bi bi-plus-lg me-1"></i> New Service Inward
+    </a>
+</div>
+
+<!-- Status Filter Tabs -->
+<ul class="nav nav-pills mb-4 gap-2 bg-white p-2 rounded-3 border shadow-sm">
+    <li class="nav-item">
+        <a class="nav-link {% if status_tab == 'all' %}active{% endif %}" href="{% url 'service_list' %}">
+            All Services <span class="badge bg-secondary rounded-pill ms-1">{{ all_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status_tab == 'Pending' %}active bg-warning text-dark{% endif %}" href="{% url 'service_list' %}?status=Pending">
+            Pending <span class="badge bg-warning text-dark rounded-pill ms-1">{{ pending_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status_tab == 'In Progress' %}active bg-primary{% endif %}" href="{% url 'service_list' %}?status=In+Progress">
+            In Progress <span class="badge bg-primary-subtle text-primary rounded-pill ms-1">{{ in_progress_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status_tab == 'Completed' %}active bg-success{% endif %}" href="{% url 'service_list' %}?status=Completed">
+            Completed <span class="badge bg-success-subtle text-success rounded-pill ms-1">{{ completed_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {% if status_tab == 'Delivered' %}active bg-secondary{% endif %}" href="{% url 'service_list' %}?status=Delivered">
+            Delivered <span class="badge bg-light text-dark rounded-pill ms-1">{{ delivered_count }}</span>
+        </a>
+    </li>
+    <li class="nav-item ms-auto">
+        <a class="nav-link {% if status_tab == 'overdue' %}active bg-danger{% else %}text-danger{% endif %}" href="{% url 'service_list' %}?status=overdue">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i> Overdue <span class="badge bg-danger rounded-pill ms-1">{{ overdue_count }}</span>
+        </a>
+    </li>
+</ul>
+
+<!-- Search & Filters -->
+<div class="card card-luxury p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        {% if status_tab != 'all' %}
+            <input type="hidden" name="status" value="{{ status_tab }}">
+        {% endif %}
+
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" value="{{ query }}" class="form-control" placeholder="Search Service ID (SRV-2026-00001), Customer, Phone, Serial, Brand...">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <select name="device" class="form-select">
+                <option value="">All Device Types</option>
+                {% for code, label in device_choices %}
+                    <option value="{{ code }}" {% if device_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-funnel me-1"></i> Apply Filters</button>
+            {% if query or device_filter %}
+                <a href="{% url 'service_list' %}{% if status_tab != 'all' %}?status={{ status_tab }}{% endif %}" class="btn btn-outline-secondary" title="Reset Filters"><i class="bi bi-x-lg"></i></a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Services Table -->
+<div class="card card-luxury">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Service ID</th>
+                    <th>Customer</th>
+                    <th>Device Details</th>
+                    <th>Complaint Summary</th>
+                    <th>Status</th>
+                    <th>Expected</th>
+                    <th>Amount / Balance</th>
+                    <th class="text-end">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in services %}
+                <tr class="{% if s.is_overdue %}table-warning{% endif %}">
+                    <td>
+                        <a href="{% url 'service_detail' s.pk %}" class="fw-bold text-decoration-none text-primary">
+                            {{ s.service_id }}
+                        </a>
+                        <div>
+                            <span class="badge {% if s.priority == 'Urgent' %}bg-danger{% elif s.priority == 'High' %}bg-warning text-dark{% else %}bg-light text-muted border{% endif %}" style="font-size: 10px;">
+                                {{ s.priority }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{% url 'customer_detail' s.customer.pk %}" class="text-decoration-none text-dark fw-bold">
+                            {{ s.customer.name }}
+                        </a>
+                        <div class="text-muted small" style="font-size: 11px;">
+                            <a href="tel:{{ s.customer.phone_number }}" class="text-secondary">{{ s.customer.phone_number }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="fw-semibold">{{ s.device_type }}</span>
+                        <div class="text-muted small" style="font-size: 11px;">{{ s.brand }} {{ s.model }}</div>
+                    </td>
+                    <td class="small" style="max-width: 220px;">
+                        <div class="text-truncate" title="{{ s.complaint }}">{{ s.complaint }}</div>
+                    </td>
+                    <td>
+                        <span class="badge-status status-{{ s.status|lower|cut:' ' }}">
+                            {{ s.status }}
+                        </span>
+                    </td>
+                    <td class="small">
+                        {% if s.is_overdue %}
+                            <span class="text-danger fw-bold"><i class="bi bi-clock me-1"></i>{{ s.expected_completion_date|date:"d-M-Y" }} (Overdue)</span>
+                        {% else %}
+                            <span class="text-muted">{{ s.expected_completion_date|date:"d-M-Y"|default:"-" }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="small">
+                        <div>Total: <strong>₹{{ s.total_amount|floatformat:2 }}</strong></div>
+                        <div class="{% if s.balance_amount > 0 %}text-danger fw-bold{% else %}text-success{% endif %}">
+                            Due: ₹{{ s.balance_amount|floatformat:2 }}
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                            <a href="{% url 'service_detail' s.pk %}" class="btn btn-outline-primary" title="Manage Service">
+                                Manage <i class="bi bi-chevron-right ms-1"></i>
+                            </a>
+                            {% if s.status in 'Completed,Delivered' %}
+                                <a href="{% url 'invoice_view' s.pk %}" class="btn btn-outline-secondary" title="View / Print Invoice">
+                                    <i class="bi bi-receipt"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center py-5 text-muted">
+                        <i class="bi bi-laptop fs-1 d-block mb-2 text-secondary"></i>
+                        No service records found matching the active filter.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="card-footer bg-white d-flex justify-content-between align-items-center py-3">
+        <small class="text-muted">Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} service records</small>
+        <nav>
+            <ul class="pagination pagination-sm mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_tab != 'all' %}&status={{ status_tab }}{% endif %}{% if query %}&q={{ query }}{% endif %}">&laquo; Previous</a></li>
+                {% endif %}
+                <li class="page-item active"><span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_tab != 'all' %}&status={{ status_tab }}{% endif %}{% if query %}&q={{ query }}{% endif %}">Next &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
