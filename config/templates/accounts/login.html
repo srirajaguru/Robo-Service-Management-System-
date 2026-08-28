@@ -4,291 +4,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Staff & Admin Login - ROBO DIGITAL COMPUTERS</title>
+    <title>Staff Portal Sign In - ROBO DIGITAL COMPUTERS</title>
 
-    <!-- Bootstrap 5 CSS & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
 
     <style>
-        :root {
-            --brand-primary: #0284c7;
-            --brand-primary-hover: #0369a1;
-            --brand-accent: #38bdf8;
-            --brand-dark: #0f172a;
-            --brand-dark-surface: #1e293b;
-        }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+            background: #f8fafc;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px 16px;
+            margin: 0;
             color: #334155;
         }
 
-        h1, h2, h3, h4, h5, h6, .brand-font {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-
-        /* 2-Column Split Master Card */
-        .login-master-card {
-            background: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+        .login-card-container {
             width: 100%;
-            max-width: 960px;
-            display: flex;
-            min-height: 580px;
+            max-width: 480px;
         }
 
-        /* Left Side Brand Showcase */
-        .login-brand-panel {
-            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-            color: #ffffff;
-            padding: 48px 40px;
-            width: 45%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            border-right: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .login-brand-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.25) 0%, transparent 60%);
-            pointer-events: none;
-        }
-
-        .brand-badge-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 26px;
-            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
-            margin-bottom: 20px;
-        }
-
-        .feature-pill-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            font-size: 13px;
-            color: #e2e8f0;
-            margin-bottom: 10px;
-            transition: all 0.2s ease;
-        }
-
-        .feature-pill-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(56, 189, 248, 0.3);
-            transform: translateX(4px);
-        }
-
-        .feature-pill-item i {
-            color: #38bdf8;
-            font-size: 16px;
-        }
-
-        /* Right Side Form Panel */
-        .login-form-panel {
+        .login-card {
             background: #ffffff;
-            padding: 48px 44px;
-            width: 55%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            padding: 40px 36px;
+        }
+
+        .login-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            color: #0f172a;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 28px;
         }
 
         .form-label {
-            font-size: 13px;
+            font-size: 13.5px;
             font-weight: 600;
-            color: #334155;
-            margin-bottom: 6px;
+            color: #0f172a;
+            margin-bottom: 8px;
         }
 
-        .input-group-text {
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-right: none;
-            color: #64748b;
-            border-radius: 10px 0 0 10px;
-            padding: 12px 14px;
+        .form-label .text-danger {
+            color: #ef4444 !important;
         }
 
-        .form-control {
+        .custom-input-group {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
             border: 1px solid #cbd5e1;
-            border-left: none;
-            border-radius: 0 10px 10px 0;
-            padding: 12px 16px;
-            font-size: 14px;
-            background-color: #ffffff;
-            color: #0f172a !important;
+            border-radius: 10px;
             transition: all 0.2s ease;
+            overflow: hidden;
         }
 
-        .form-control:focus {
+        .custom-input-group:focus-within {
             border-color: #0284c7;
-            background-color: #ffffff;
-            color: #0f172a !important;
             box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
         }
 
-        .password-toggle-btn {
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
-            border-left: none;
-            border-radius: 0 10px 10px 0;
+        .input-icon-box {
+            padding: 12px 14px;
             color: #64748b;
-            padding: 0 14px;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .custom-form-input {
+            border: none;
+            outline: none;
+            box-shadow: none;
+            width: 100%;
+            padding: 12px 14px 12px 0;
+            font-size: 14.5px;
+            color: #0f172a;
+            background: transparent;
+        }
+
+        .custom-form-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .password-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 12px 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: #0284c7;
         }
 
         .btn-signin {
-            background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
-            border: none;
+            background-color: #0284c7;
+            border: 1px solid #0284c7;
             color: #ffffff;
             font-weight: 600;
             border-radius: 10px;
             padding: 13px 20px;
             font-size: 15px;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
-            transition: all 0.2s ease;
-        }
-
-        .btn-signin:hover {
-            background: linear-gradient(135deg, #0369a1 0%, #075985 100%);
-            color: #ffffff;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.45);
-        }
-
-        /* Demo Account Quick Fill Pills */
-        .demo-pill-btn {
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            color: #334155;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 5px 12px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
+            width: 100%;
+            display: flex;
             align-items: center;
-            gap: 4px;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
         }
 
-        .demo-pill-btn:hover {
-            background: #e0f2fe;
-            color: #0369a1;
-            border-color: #bae6fd;
-            transform: scale(1.04);
+        .btn-signin:hover, .btn-signin:focus {
+            background-color: #0369a1;
+            border-color: #0369a1;
+            color: #ffffff;
+            box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
         }
 
-        @media (max-width: 991px) {
-            .login-master-card {
-                flex-direction: column;
-                max-width: 480px;
-            }
+        .footer-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            font-size: 13px;
+        }
 
-            .login-brand-panel {
-                width: 100%;
-                padding: 32px 28px;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            }
+        .footer-links a {
+            color: #64748b;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
 
-            .login-form-panel {
-                width: 100%;
-                padding: 32px 28px;
-            }
+        .footer-links a:hover {
+            color: #0284c7;
         }
     </style>
 </head>
 <body>
 
-    <div class="login-master-card">
-        <!-- Left Side: Brand Identity & Highlights -->
-        <div class="login-brand-panel">
-            <div>
-                <div class="brand-badge-icon">
-                    <i class="bi bi-cpu-fill"></i>
-                </div>
-                <h3 class="brand-font mb-1 text-white">ROBO DIGITAL</h3>
-                <p class="text-white-50 small mb-4" style="letter-spacing: 0.3px;">Service Management & Operations Portal</p>
+    <div class="login-card-container">
+        <div class="login-card">
+            <h1 class="login-title">Staff Portal Sign In</h1>
+            <p class="login-subtitle">Enter your authorized credentials to access the service management console.</p>
 
-                <div class="d-flex flex-column gap-2 mb-4">
-                    <div class="feature-pill-item">
-                        <i class="bi bi-shield-lock-fill"></i>
-                        <span>Role-Based Admin & Staff Access</span>
-                    </div>
-                    <div class="feature-pill-item">
-                        <i class="bi bi-tools"></i>
-                        <span>Chip-Level Diagnostics & Inward</span>
-                    </div>
-                    <div class="feature-pill-item">
-                        <i class="bi bi-receipt"></i>
-                        <span>GST Billing & Service Ledger</span>
-                    </div>
-                    <div class="feature-pill-item">
-                        <i class="bi bi-whatsapp"></i>
-                        <span>Automated WhatsApp Alerts</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center text-white-50 small">
-                <span><i class="bi bi-geo-alt-fill text-danger me-1"></i> Musiri, Trichy</span>
-                <span class="text-info fw-semibold">Helpline: 8122227042</span>
-            </div>
-        </div>
-
-        <!-- Right Side: Login Form Panel -->
-        <div class="login-form-panel">
-            <div class="mb-4">
-                <h3 class="brand-font mb-1 text-dark" style="color: #0f172a;">Staff Portal Sign In</h3>
-                <p class="text-muted small mb-0">Enter your authorized credentials to access the service management console.</p>
-            </div>
-
-            <!-- Flash Error Messages -->
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show py-2 px-3 small rounded-3" role="alert">
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show py-2 px-3 small rounded-3 mb-3" role="alert">
                         <i class="bi bi-info-circle-fill me-1"></i> {{ message }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
@@ -302,27 +188,25 @@
                 </div>
             {% endif %}
 
-            <form method="post" action="{% url 'login' %}" class="mb-4" id="loginForm">
+            <form method="post" action="{% url 'login' %}" id="loginForm">
                 {% csrf_token %}
 
-                <!-- Username Field -->
                 <div class="mb-3">
                     <label for="id_username" class="form-label">Username <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Enter staff username" required autofocus value="{{ form.username.value|default:'' }}">
+                    <div class="custom-input-group">
+                        <span class="input-icon-box"><i class="bi bi-person-fill"></i></span>
+                        <input type="text" name="username" id="id_username" class="custom-form-input" placeholder="Enter staff username" required autofocus value="{{ form.username.value|default:'' }}">
                     </div>
                     {% if form.username.errors %}
                         <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
                     {% endif %}
                 </div>
 
-                <!-- Password Field -->
                 <div class="mb-4">
                     <label for="id_password" class="form-label">Password <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                        <input type="password" name="password" id="id_password" class="form-control" style="border-right: none;" placeholder="Enter password" required>
+                    <div class="custom-input-group">
+                        <span class="input-icon-box"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" name="password" id="id_password" class="custom-form-input" placeholder="Enter password" required>
                         <button class="password-toggle-btn" type="button" id="togglePasswordBtn" title="Toggle password visibility">
                             <i class="bi bi-eye" id="toggleIcon"></i>
                         </button>
@@ -332,76 +216,23 @@
                     {% endif %}
                 </div>
 
-                <button type="submit" class="btn btn-signin w-100 mb-3">
-                    <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Service Portal
+                <button type="submit" class="btn btn-signin">
+                    <i class="bi bi-box-arrow-in-right"></i> Sign In to Service Portal
                 </button>
             </form>
 
-            <!-- Quick Demo Credentials Fill -->
-            <div class="p-3 bg-light rounded-3 border mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-2">
-                    <span class="text-muted small fw-bold text-uppercase" style="font-size: 11px;">
-                        <i class="bi bi-lightning-charge-fill text-warning me-1"></i>1-Click Demo Login:
-                    </span>
-                    <span class="text-muted small" style="font-size: 11px;">Click to auto-fill</span>
-                </div>
-                <div class="d-flex flex-wrap gap-2">
-                    <button type="button" class="demo-pill-btn" onclick="fillCredentials('admin', 'admin123')">
-                        <i class="bi bi-shield-check text-primary"></i> Admin (admin)
-                    </button>
-                    <button type="button" class="demo-pill-btn" onclick="fillCredentials('arun', 'staff123')">
-                        <i class="bi bi-person-badge text-success"></i> Staff (arun)
-                    </button>
-                    <button type="button" class="demo-pill-btn" onclick="fillCredentials('priya', 'staff123')">
-                        <i class="bi bi-person-badge text-info"></i> Staff (priya)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Footer Links -->
-            <div class="d-flex justify-content-between align-items-center small">
-                <a href="{% url 'home' %}" class="text-decoration-none text-muted">
+            <div class="footer-links">
+                <a href="{% url 'home' %}">
                     <i class="bi bi-arrow-left me-1"></i> Public Website
                 </a>
-                <a href="{% url 'track' %}" class="text-decoration-none text-primary fw-semibold">
-                    <i class="bi bi-search me-1"></i> Track Service Status
+                <a href="{% url 'track' %}">
+                    <i class="bi bi-search me-1"></i> Track Service
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS & Quick Fill Helper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Password Visibility Toggle
-        const toggleBtn = document.getElementById('togglePasswordBtn');
-        const passwordInput = document.getElementById('id_password');
-        const toggleIcon = document.getElementById('toggleIcon');
-
-        if (toggleBtn && passwordInput && toggleIcon) {
-            toggleBtn.addEventListener('click', () => {
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    toggleIcon.classList.remove('bi-eye');
-                    toggleIcon.classList.add('bi-eye-slash');
-                } else {
-                    passwordInput.type = 'password';
-                    toggleIcon.classList.remove('bi-eye-slash');
-                    toggleIcon.classList.add('bi-eye');
-                }
-            });
-        }
-
-        // Quick Fill Demo Credentials
-        function fillCredentials(username, password) {
-            const userInput = document.getElementById('id_username');
-            const passInput = document.getElementById('id_password');
-            if (userInput && passInput) {
-                userInput.value = username;
-                passInput.value = password;
-                userInput.focus();
-            }
-        }
-    </script>
+    <script src="{% static 'js/login.js' %}"></script>
 </body>
 </html>

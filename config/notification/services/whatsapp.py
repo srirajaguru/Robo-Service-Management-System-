@@ -4,13 +4,11 @@ import urllib.request
 import urllib.parse
 import logging
 from django.conf import settings
-from notification.models import Notification
 
 logger = logging.getLogger(__name__)
 
 
 def clean_phone_number(phone: str) -> str:
-    """Format phone number for WhatsApp with country code."""
     if not phone:
         return ""
     digits = "".join(ch for ch in str(phone) if ch.isdigit())
@@ -22,7 +20,6 @@ def clean_phone_number(phone: str) -> str:
 
 
 def inward_message(service) -> str:
-    """Generate message text for Service Inward."""
     customer_name = service.customer.name if service.customer else "Valued Customer"
     service_id_str = str(service)
     device_info = f"{service.device_type} ({service.brand} {service.model})".strip()
@@ -44,7 +41,6 @@ def inward_message(service) -> str:
 
 
 def completion_message(service) -> str:
-    """Generate message text for Service Completion."""
     customer_name = service.customer.name if service.customer else "Valued Customer"
     service_id_str = str(service)
     device_info = f"{service.device_type} ({service.brand} {service.model})".strip()
@@ -67,7 +63,6 @@ def completion_message(service) -> str:
 
 
 def payment_message(service, payment) -> str:
-    """Generate message text for Payment confirmation."""
     customer_name = service.customer.name if service.customer else "Valued Customer"
     return (
         f"Dear {customer_name},\n\n"
@@ -79,18 +74,12 @@ def payment_message(service, payment) -> str:
 
 
 def generate_whatsapp_web_url(phone: str, message: str) -> str:
-    """Generate direct wa.me link for manual WhatsApp sending."""
     clean_phone = clean_phone_number(phone)
     encoded_message = urllib.parse.quote(message)
     return f"https://wa.me/{clean_phone}?text={encoded_message}"
 
 
 def send_whatsapp_notification(service, notification_type: str, message: str, staff_profile=None):
-    """
-    Send WhatsApp notification using WhatsApp Cloud API.
-    Falls back gracefully to simulated logging if API credentials are not provided.
-    Never throws unhandled exceptions that interrupt user actions.
-    """
     customer = getattr(service, "customer", None)
     phone = getattr(customer, "phone_number", "")
     clean_phone = clean_phone_number(phone)
@@ -105,8 +94,8 @@ def send_whatsapp_notification(service, notification_type: str, message: str, st
     if not clean_phone:
         status = "Failed"
         response_log = "Error: Customer phone number is missing or invalid."
+        logger.warning("WhatsApp notification skipped: Invalid or missing phone number for service %s", service)
     elif token and phone_number_id:
-        # Live WhatsApp Cloud API call
         endpoint = f"{api_url}/{phone_number_id}/messages"
         payload = {
             "messaging_product": "whatsapp",
@@ -130,24 +119,19 @@ def send_whatsapp_notification(service, notification_type: str, message: str, st
                 resp_data = response.read().decode("utf-8")
                 status = "Sent"
                 response_log = f"Status {response.status}: {resp_data}"
+                logger.info("WhatsApp sent to %s for %s (%s)", clean_phone, service, notification_type)
         except Exception as exc:
             status = "Failed"
             response_log = f"API Error: {str(exc)}"
-            logger.error("WhatsApp API request failed: %s", exc)
+            logger.error("WhatsApp API request failed for %s: %s", clean_phone, exc)
     else:
-        # Development / Simulation mode
-        status = "Simulated"
-        response_log = "Simulated: WhatsApp credentials not set in .env. Message recorded for review."
+        status = "DirectLink"
+        response_log = "WhatsApp message prepared for direct transmission."
+        logger.info("WhatsApp notification prepared for %s (%s): %s", clean_phone, notification_type, message[:80])
 
-    # Record notification in database
-    notification = Notification.objects.create(
-        service=service,
-        customer=customer,
-        notification_type=notification_type,
-        phone_number=clean_phone or phone,
-        message=message,
-        status=status,
-        response_log=response_log,
-        sent_by=staff_profile
-    )
-    return notification
+    return {
+        "status": status,
+        "phone": clean_phone or phone,
+        "message": message,
+        "response": response_log,
+    }

@@ -34,7 +34,7 @@ class Service(models.Model):
     service_id = models.CharField(max_length=20, unique=True, editable=False, db_index=True, default='')
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='services')
     
-    # Device details
+
     device_type = models.CharField(max_length=50, choices=DEVICE_TYPES, default='Laptop')
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
@@ -43,22 +43,22 @@ class Service(models.Model):
     physical_condition = models.TextField(blank=True, default='', help_text="e.g. Scratches on lid, minor dent, good condition")
     accessories = models.TextField(blank=True, default='', help_text="e.g. Charger, Power Cable, Bag, Mouse")
 
-    # Complaint & Diagnosis
+    
     complaint = models.TextField(help_text="Customer's reported problem")
     initial_diagnosis = models.TextField(blank=True, default='', help_text="Initial technical findings")
     technician_notes = models.TextField(blank=True, default='', help_text="Internal notes")
 
-    # Service meta
+   
     priority = models.CharField(max_length=15, choices=PRIORITY_CHOICES, default='Medium')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
     expected_completion_date = models.DateField(blank=True, null=True)
 
-    # Financials (all optional with default 0.00)
+ 
     estimated_cost = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), blank=True)
     service_charge = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), blank=True)
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), blank=True)
 
-    # Staff attribution
+   
     created_by = models.ForeignKey(
         'accounts.StaffProfile',
         on_delete=models.SET_NULL,
@@ -74,7 +74,7 @@ class Service(models.Model):
         related_name='updated_services'
     )
 
-    # Timestamps
+  
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     completed_at = models.DateTimeField(blank=True, null=True)
@@ -97,13 +97,13 @@ class Service(models.Model):
         if is_new and not self.service_id:
             super().save(*args, **kwargs)
             year = self.created_at.year if self.created_at else timezone.now().year
-            self.service_id = f"SRV-{year}-{self.pk:05d}"
+            self.service_id = f"RDC-{year}-{self.pk:05d}"
             super().save(update_fields=['service_id'])
             return
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.service_id if self.service_id else f"SRV-ID-{self.pk}"
+        return self.service_id if self.service_id else f"RDC-ID-{self.pk}"
 
     @property
     def total_expenses(self):

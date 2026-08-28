@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-robo-digital-computers-ser
 
 DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "yes")
 
-allowed_hosts_raw = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost")
+allowed_hosts_raw = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,testserver")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_raw.split(",") if host.strip()] or ["*"]
 
 

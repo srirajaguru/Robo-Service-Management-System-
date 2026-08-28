@@ -96,7 +96,6 @@ def customer_detail(request, pk):
 
 @staff_required
 def customer_search_api(request):
-    """AJAX endpoint for searching customers in Service Inward modal/autocomplete."""
     query = request.GET.get('q', '').strip()
     if not query or len(query) < 2:
         return JsonResponse({'results': []})
@@ -122,3 +121,59 @@ def customer_search_api(request):
         })
 
     return JsonResponse({'results': results})
+
+
+@staff_required
+def customer_quick_create_api(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed'}, status=405)
+
+    import json
+    if request.content_type == 'application/json':
+        try:
+            data = json.loads(request.body)
+        except Exception:
+            data = request.POST
+    else:
+        data = request.POST
+
+    name = data.get('name', '').strip()
+    phone = data.get('phone', '').strip() or data.get('phone_number', '').strip()
+    address = data.get('address', '').strip()
+
+    if not name:
+        return JsonResponse({'success': False, 'error': 'Customer name is required.'}, status=400)
+    if not phone:
+        return JsonResponse({'success': False, 'error': 'Mobile number is required.'}, status=400)
+
+    existing = Customer.objects.filter(phone_number=phone).first()
+    if existing:
+        return JsonResponse({
+            'success': True,
+            'is_existing': True,
+            'customer': {
+                'id': existing.pk,
+                'customer_id': existing.customer_id,
+                'name': existing.name,
+                'phone': existing.phone_number,
+                'address': existing.address,
+            }
+        })
+
+    customer = Customer.objects.create(
+        name=name,
+        phone_number=phone,
+        address=address
+    )
+
+    return JsonResponse({
+        'success': True,
+        'is_existing': False,
+        'customer': {
+            'id': customer.pk,
+            'customer_id': customer.customer_id,
+            'name': customer.name,
+            'phone': customer.phone_number,
+            'address': customer.address,
+        }
+    })

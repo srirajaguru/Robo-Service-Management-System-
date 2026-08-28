@@ -165,7 +165,6 @@ def service_detail(request, pk):
     progress_updates = service.progress.select_related('created_by').order_by('-created_at')
     status_history = service.history.select_related('changed_by').order_by('-changed_at')
     ledger_entries = service.ledger_entries.select_related('created_by').order_by('-created_at')
-    notifications = service.notifications.select_related('sent_by').order_by('-sent_at')
 
     status_form = StatusUpdateForm(initial={'status': service.status})
     progress_form = ProgressUpdateForm()
@@ -187,7 +186,6 @@ def service_detail(request, pk):
         'progress_updates': progress_updates,
         'status_history': status_history,
         'ledger_entries': ledger_entries,
-        'notifications': notifications,
         'status_form': status_form,
         'progress_form': progress_form,
         'expense_form': expense_form,

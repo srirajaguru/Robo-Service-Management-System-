@@ -95,7 +95,7 @@
             </div>
             <h2 class="brand-font mb-2 text-white display-6 fw-bold">Live Device Repair & Service Status</h2>
             <p class="text-white-50 mx-auto mb-4" style="max-width: 580px;">
-                Enter your Service ID (e.g. <code>SRV-2026-00001</code>) or your 10-digit registered mobile number to check the real-time status of your device.
+                Enter your Service ID (e.g. <code>RDC-2026-00001</code>) or your 10-digit registered mobile number to check the real-time status of your device.
             </p>
 
             <div class="row justify-content-center">
@@ -103,7 +103,7 @@
                     <div class="search-container-box text-start">
                         <form method="get" action="{% url 'track' %}">
                             <div class="input-group input-group-lg">
-                                <input type="text" name="q" value="{{ query }}" class="form-control border-0" placeholder="e.g. SRV-2026-00001 or 9876543210" required autofocus>
+                                <input type="text" name="q" value="{{ query }}" class="form-control border-0" placeholder="e.g. RDC-2026-00001 or 9876543210" required autofocus>
                                 <button class="btn btn-primary fw-bold px-4" type="submit">
                                     <i class="bi bi-search me-1"></i> Track
                                 </button>

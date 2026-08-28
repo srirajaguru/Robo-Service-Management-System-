@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}New Service Inward{% endblock %}
 {% block breadcrumb %}<a href="{% url 'service_list' %}" class="text-decoration-none">Services</a> / Service Inward{% endblock %}
@@ -33,7 +34,6 @@
             <form method="post" id="inwardForm">
                 {% csrf_token %}
 
-                <!-- SECTION 1: CUSTOMER SELECTION -->
                 <div class="border rounded-3 p-3 mb-4 bg-light">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h5 class="brand-font text-primary mb-0">
@@ -55,14 +55,13 @@
                         <div class="col-md-5">
                             <div class="input-group">
                                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                                <input type="text" id="liveCustomerSearch" class="form-control" placeholder="Quick search by phone or name...">
+                                <input type="text" id="liveCustomerSearch" class="form-control" data-search-url="{% url 'customer_search_api' %}" placeholder="Quick search by phone or name...">
                             </div>
                         </div>
                     </div>
                     <div id="liveSearchResults" class="list-group mt-2 d-none shadow-sm"></div>
                 </div>
 
-                <!-- SECTION 2: DEVICE DETAILS -->
                 <div class="border rounded-3 p-3 mb-4">
                     <h5 class="brand-font text-primary mb-3">
                         <i class="bi bi-laptop me-2"></i>2. Device Details
@@ -101,7 +100,6 @@
                     </div>
                 </div>
 
-                <!-- SECTION 3: ACCESSORIES RECEIVED -->
                 <div class="border rounded-3 p-3 mb-4 bg-light">
                     <h5 class="brand-font text-primary mb-2">
                         <i class="bi bi-box-seam me-2"></i>3. Accessories Received With Device
@@ -127,7 +125,6 @@
                     </div>
                 </div>
 
-                <!-- SECTION 4: COMPLAINT, DIAGNOSIS & ESTIMATE -->
                 <div class="border rounded-3 p-3 mb-4">
                     <h5 class="brand-font text-primary mb-3">
                         <i class="bi bi-tools me-2"></i>4. Problem Diagnosis & Estimation
@@ -169,7 +166,6 @@
                     </div>
                 </div>
 
-                <!-- SECTION 5: AUTOMATED NOTIFICATION & SUBMIT -->
                 <div class="d-flex flex-wrap justify-content-between align-items-center bg-white p-3 rounded-3 border">
                     <div class="form-check form-switch mb-2 mb-md-0">
                         <input class="form-check-input" type="checkbox" name="send_whatsapp" id="sendWhatsAppToggle" value="1" checked>
@@ -190,7 +186,6 @@
     </div>
 </div>
 
-<!-- Quick Add Customer Modal -->
 <div class="modal fade" id="quickAddCustomerModal" tabindex="-1" aria-labelledby="quickAddCustomerModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -201,6 +196,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div id="quickCustomerAlert" class="alert alert-danger d-none py-2 small mb-3"></div>
                 <form id="quickCustomerForm">
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Customer Full Name <span class="text-danger">*</span></label>
@@ -218,7 +214,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="saveQuickCustomerBtn">Add & Select Customer</button>
+                <button type="button" class="btn btn-primary" id="saveQuickCustomerBtn" data-api-url="{% url 'customer_quick_create_api' %}">Add & Select Customer</button>
             </div>
         </div>
     </div>
@@ -227,77 +223,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Live AJAX Customer Search
-    const searchInput = document.getElementById('liveCustomerSearch');
-    const resultsContainer = document.getElementById('liveSearchResults');
-    const customerSelect = document.getElementById('id_customer_select');
-
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            const query = this.value.trim();
-            if (query.length < 2) {
-                resultsContainer.classList.add('d-none');
-                resultsContainer.innerHTML = '';
-                return;
-            }
-
-            fetch(`{% url 'customer_search_api' %}?q=${encodeURIComponent(query)}`)
-                .then(res => res.json())
-                .then(data => {
-                    resultsContainer.innerHTML = '';
-                    if (data.results && data.results.length > 0) {
-                        resultsContainer.classList.remove('d-none');
-                        data.results.forEach(c => {
-                            const item = document.createElement('a');
-                            item.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2';
-                            item.href = '#';
-                            item.innerHTML = `
-                                <div>
-                                    <strong>${c.name}</strong> (${c.customer_id})
-                                    <div class="text-muted small">${c.phone} • ${c.address || 'Musiri'}</div>
-                                </div>
-                                <span class="badge bg-primary rounded-pill">Select</span>
-                            `;
-                            item.addEventListener('click', function(e) {
-                                e.preventDefault();
-                                // Select in dropdown
-                                let option = Array.from(customerSelect.options).find(opt => opt.value == c.id);
-                                if (!option) {
-                                    option = new Option(`${c.name} (${c.customer_id} - ${c.phone})`, c.id, true, true);
-                                    customerSelect.add(option);
-                                }
-                                customerSelect.value = c.id;
-                                resultsContainer.classList.add('d-none');
-                                searchInput.value = `${c.name} (${c.phone})`;
-                            });
-                            resultsContainer.appendChild(item);
-                        });
-                    } else {
-                        resultsContainer.classList.remove('d-none');
-                        resultsContainer.innerHTML = '<div class="list-group-item text-muted small py-2">No matching customers. Click "+ Quick Add New Customer" above.</div>';
-                    }
-                })
-                .catch(err => console.error(err));
-        });
-    }
-
-    // Quick Add Customer Handler
-    const saveQuickCustomerBtn = document.getElementById('saveQuickCustomerBtn');
-    if (saveQuickCustomerBtn) {
-        saveQuickCustomerBtn.addEventListener('click', function() {
-            const name = document.getElementById('quick_name').value.trim();
-            const phone = document.getElementById('quick_phone').value.trim();
-            const address = document.getElementById('quick_address').value.trim();
-
-            if (!name || !phone) {
-                alert('Please enter both name and mobile number.');
-                return;
-            }
-
-            // Simple form submit redirect or AJAX
-            window.location.href = `{% url 'customer_create' %}?next=inward`;
-        });
-    }
-</script>
+<script src="{% static 'js/inward.js' %}"></script>
 {% endblock %}

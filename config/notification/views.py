@@ -22,14 +22,14 @@ def notification_list(request):
 def notification_resend(request, pk):
     notif = get_object_or_404(Notification, pk=pk)
     staff = getattr(request.user, 'staffprofile', None)
-    new_notif = send_whatsapp_notification(
+    res = send_whatsapp_notification(
         service=notif.service,
         notification_type=notif.notification_type,
         message=notif.message,
         staff_profile=staff
     )
-    if new_notif.status in ('Sent', 'Simulated'):
-        messages.success(request, f"Notification retry recorded (Status: {new_notif.get_status_display()}).")
+    if res.get('status') in ('Sent', 'DirectLink', 'Simulated'):
+        messages.success(request, f"Notification resent to {res.get('phone')}.")
     else:
-        messages.warning(request, f"Notification retry failed: {new_notif.response_log}")
-    return redirect(request.META.get('HTTP_REFERER', 'notification_list'))
+        messages.warning(request, f"Notification delivery: {res.get('response')}")
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))

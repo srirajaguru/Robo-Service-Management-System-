@@ -9,7 +9,6 @@ from django.utils import timezone
 from customers.models import Customer
 from services.models import Service
 from ledger.models import Expense, Payment, LedgerEntry
-from notification.models import Notification
 from .models import StaffProfile
 from .forms import LoginForm, StaffCreationForm, StaffEditForm
 from .decorators import admin_required, staff_required
@@ -94,7 +93,6 @@ def get_dashboard_context(user):
     net_margin = total_revenue - total_expenses
 
     recent_services = all_services.order_by('-created_at')[:8]
-    recent_notifications = Notification.objects.select_related('service', 'customer').order_by('-sent_at')[:6]
 
     return {
         'total_customers': total_customers,
@@ -121,8 +119,6 @@ def get_dashboard_context(user):
         'net_margin': net_margin,
         'recent_services': recent_services,
         'services': recent_services,
-        'recent_notifications': recent_notifications,
-        'notification_count': Notification.objects.count(),
         'total_staff_count': StaffProfile.objects.count(),
     }
 
