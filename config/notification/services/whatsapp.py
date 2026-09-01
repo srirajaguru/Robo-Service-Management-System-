@@ -28,15 +28,15 @@ def inward_message(service) -> str:
     return (
         f"Dear {customer_name},\n\n"
         f"Your device has been received for service at ROBO DIGITAL COMPUTERS.\n\n"
-        f"🔖 Service ID: {service_id_str}\n"
-        f"💻 Device: {device_info}\n"
-        f"⚠️ Complaint: {service.complaint}\n"
-        f"📅 Expected Date: {exp_date}\n\n"
+        f" Service ID: {service_id_str}\n"
+        f" Device: {device_info}\n"
+        f" Complaint: {service.complaint}\n"
+        f" Expected Date: {exp_date}\n\n"
         f"We will notify you once the service diagnosis or completion is ready.\n\n"
         f"Thank you,\n"
         f"ROBO DIGITAL COMPUTERS\n"
         f"54A Govt Boys School Opposite, Trichy Road, Musiri\n"
-        f"📞 8122227042 / 8122227074"
+        f" 8122227042 / 8122227074"
     )
 
 
@@ -49,16 +49,16 @@ def completion_message(service) -> str:
 
     return (
         f"Dear {customer_name},\n\n"
-        f"✅ Your device service is now COMPLETED at ROBO DIGITAL COMPUTERS!\n\n"
-        f"🔖 Service ID: {service_id_str}\n"
-        f"💻 Device: {device_info}\n"
-        f"💰 Total Amount: ₹{total_amt}\n"
-        f"💳 Balance Due: ₹{balance_amt}\n\n"
+        f"Your device service is now COMPLETED at ROBO DIGITAL COMPUTERS!\n\n"
+        f"Service ID: {service_id_str}\n"
+        f"Device: {device_info}\n"
+        f"Total Amount: ₹{total_amt}\n"
+        f"Balance Due: ₹{balance_amt}\n\n"
         f"Your device is ready for collection at our shop.\n\n"
         f"Thank you for choosing us,\n"
         f"ROBO DIGITAL COMPUTERS\n"
         f"54A Govt Boys School Opposite, Trichy Road, Musiri\n"
-        f"📞 8122227042 / 8122227074"
+        f" 8122227042 / 8122227074"
     )
 
 
@@ -66,7 +66,7 @@ def payment_message(service, payment) -> str:
     customer_name = service.customer.name if service.customer else "Valued Customer"
     return (
         f"Dear {customer_name},\n\n"
-        f"💵 Payment of ₹{payment.amount} received for Service {service} via {payment.payment_method}.\n"
+        f"Payment of ₹{payment.amount} received for Service {service} via {payment.payment_method}.\n"
         f"Remaining Balance: ₹{service.balance_amount}\n\n"
         f"Thank you,\n"
         f"ROBO DIGITAL COMPUTERS"
